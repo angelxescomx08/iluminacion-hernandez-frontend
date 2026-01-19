@@ -1,0 +1,155 @@
+---
+// Header para Iluminación Hernández
+---
+
+<header class="sticky top-0 z-50 w-full border-b bg-base-100 shadow-sm">
+	<div class="drawer">
+		<input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
+		
+		<!-- Contenido principal -->
+		<div class="drawer-content flex flex-col">
+			<div class="navbar bg-base-100 border-b">
+				<!-- Botón para abrir drawer en móvil -->
+				<div class="flex-none lg:hidden">
+					<label for="drawer-toggle" class="btn btn-ghost btn-square">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+						</svg>
+					</label>
+				</div>
+				
+				<!-- Logo y nombre -->
+				<div class="flex-1">
+					<a href="/" class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all hover:bg-base-200/50 group">
+						<div class="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+							</svg>
+						</div>
+						<span class="font-montserrat font-bold text-xl text-base-content group-hover:text-primary transition-colors">
+							<span class="hidden sm:inline">Iluminación Hernández</span>
+							<span class="sm:hidden">I.H.</span>
+						</span>
+					</a>
+				</div>
+				
+				<!-- Navegación desktop -->
+				<div class="hidden lg:flex flex-none">
+					<ul class="menu menu-horizontal px-1 gap-2 font-inter">
+						<li><a href="/tienda" class="text-base-content hover:text-primary hover:bg-base-200 transition-colors rounded-lg">Tienda</a></li>
+						<li><a href="/marcas" class="text-base-content hover:text-primary hover:bg-base-200 transition-colors rounded-lg">Marcas</a></li>
+						<li><a href="/contacto" class="text-base-content hover:text-primary hover:bg-base-200 transition-colors rounded-lg">Contacto</a></li>
+						<li><a href="/sucursales" class="text-base-content hover:text-primary hover:bg-base-200 transition-colors rounded-lg">Sucursales</a></li>
+					</ul>
+				</div>
+				
+				<!-- Avatar del usuario -->
+				<div class="flex-none">
+					<div class="dropdown dropdown-end">
+						<label tabindex="0" class="btn btn-ghost btn-circle avatar">
+							<div class="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+								<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Usuario" alt="Avatar del usuario" />
+							</div>
+						</label>
+						<ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-50 p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-300">
+							<li class="menu-title font-montserrat font-semibold">
+								<span>Usuario</span>
+							</li>
+							<li><a href="/perfil" class="font-inter">Mi Perfil</a></li>
+							<li><a href="/configuracion" class="font-inter">Configuración</a></li>
+							<li><hr class="my-2"></li>
+							<li><a href="/cerrar-sesion" class="font-inter text-error">Cerrar Sesión</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Drawer lateral (móvil) -->
+		<div class="drawer-side">
+			<label for="drawer-toggle" class="drawer-overlay"></label>
+			<aside class="w-80 min-h-full bg-base-100 border-r">
+				<!-- Header del drawer -->
+				<div class="p-4 border-b">
+					<div class="flex items-center gap-2">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+						</svg>
+						<h2 class="font-montserrat font-bold text-xl text-base-content">Iluminación Hernández</h2>
+					</div>
+				</div>
+				
+				<!-- Menú de navegación del drawer -->
+				<ul class="menu p-4 w-full font-inter text-base">
+					<li>
+						<a href="/tienda" class="flex items-center gap-3 text-base-content hover:text-primary hover:bg-base-200 active:text-primary active:bg-base-200 focus:text-primary focus:bg-base-200 rounded-lg transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+							</svg>
+							Tienda
+						</a>
+					</li>
+					<li>
+						<a href="/marcas" class="flex items-center gap-3 text-base-content hover:text-primary hover:bg-base-200 active:text-primary active:bg-base-200 focus:text-primary focus:bg-base-200 rounded-lg transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+							</svg>
+							Marcas
+						</a>
+					</li>
+					<li>
+						<a href="/contacto" class="flex items-center gap-3 text-base-content hover:text-primary hover:bg-base-200 active:text-primary active:bg-base-200 focus:text-primary focus:bg-base-200 rounded-lg transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+							</svg>
+							Contacto
+						</a>
+					</li>
+					<li>
+						<a href="/sucursales" class="flex items-center gap-3 text-base-content hover:text-primary hover:bg-base-200 active:text-primary active:bg-base-200 focus:text-primary focus:bg-base-200 rounded-lg transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+							</svg>
+							Sucursales
+						</a>
+					</li>
+				</ul>
+				
+				<!-- Información del usuario en el drawer -->
+				<div class="absolute bottom-0 w-full p-4 border-t">
+					<div class="flex items-center gap-3 mb-3">
+						<div class="avatar">
+							<div class="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+								<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Usuario" alt="Avatar del usuario" />
+							</div>
+						</div>
+						<div>
+							<p class="font-montserrat font-semibold text-sm text-base-content">Usuario</p>
+							<p class="font-inter text-xs text-base-content/60">usuario@ejemplo.com</p>
+						</div>
+					</div>
+					<div class="flex gap-2">
+						<a href="/perfil" class="btn btn-ghost btn-sm flex-1 font-inter">Perfil</a>
+						<a href="/cerrar-sesion" class="btn btn-ghost btn-sm flex-1 font-inter text-error">Salir</a>
+					</div>
+				</div>
+			</aside>
+		</div>
+	</div>
+</header>
+
+<style>
+	/* Asegurar que los links del drawer mantengan colores claros en todos los estados */
+	.drawer-side a:active,
+	.drawer-side a:focus,
+	.drawer-side a:focus-visible {
+		color: hsl(var(--p)) !important;
+		background-color: hsl(var(--b2)) !important;
+		outline: none;
+	}
+	
+	.drawer-side a:visited {
+		color: hsl(var(--bc)) !important;
+	}
+</style>

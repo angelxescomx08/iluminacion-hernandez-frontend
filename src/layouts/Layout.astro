@@ -1,10 +1,10 @@
 ---
-import { Header } from "../components/Header";
+import Header from "@/components/Header.astro";
 import "../styles/global.css";
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="light">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -13,7 +13,7 @@ import "../styles/global.css";
 		<title>Iluminación Hernández</title>
 	</head>
 	<body class="font-inter">
-		<Header client:load />
+		<Header />
 		<slot />
 	</body>
 </html>
