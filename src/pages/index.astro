@@ -1,108 +1,118 @@
 ---
-import Layout from "../layouts/Layout.astro"
-import { Picture } from "astro:assets"
-import hero from "../assets/images/hero.webp"
+import Layout from "../layouts/Layout.astro";
+import { Picture } from "astro:assets";
+import hero from "../assets/images/hero.webp";
 ---
 
 <Layout>
-  <main class="overflow-hidden"> <section class="hero-section">
-      <div class="hero-image-container">
-        <Picture
-          src={hero}
-          alt="Hero"
-          formats={["avif", "webp", "jpeg", "png"]}
-          quality="high"
-          widths={[640, 1024, 1440, 1920]}
-          sizes="100vw"
-          class="hero-image"
-          priority
-        />
-      </div>
+    <main class="overflow-hidden">
+        <section class="hero-section">
+            <div class="hero-image-container">
+                <Picture
+                    src={hero}
+                    alt="Hero"
+                    formats={["avif", "webp", "jpeg", "png"]}
+                    quality="high"
+                    widths={[448, 1024, 1440, 1920]}
+                    sizes="100vw"
+                    class="hero-image"
+                    priority
+                />
+            </div>
 
-      <div class="hero-text">
-        <h1 class="text-white text-xl md:text-5xl font-bold font-montserrat text-shadow-md">
-          Iluminación que transforma tus espacios
-        </h1>
-        <p class="text-white text-lg md:text-3xl font-medium font-inter mt-4 text-shadow-md">
-          Lámparas modernas, clásicas y decorativas para cada necesidad
-        </p>
-      </div>
-    </section>
-  </main>
+            <div class="hero-text">
+                <h1
+                    class="text-white text-xl md:text-5xl font-bold font-montserrat text-shadow-md"
+                >
+                    Iluminación que transforma tus espacios
+                </h1>
+                <p
+                    class="text-white text-lg md:text-3xl font-medium font-inter mt-4 text-shadow-md"
+                >
+                    Lámparas modernas, clásicas y decorativas para cada
+                    necesidad
+                </p>
+            </div>
+        </section>
+    </main>
 </Layout>
 
 <style>
-  .hero-section {
-    position: relative;
-    width: 100%;
-    height: 100dvh;
-    overflow: hidden; /* Corta cualquier cosa que salga de los bordes */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .hero-image-container {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-  }
-
-  .hero-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Sincronización: 10 segundos, misma curva de tiempo */
-    animation: sync-zoom 10s ease-in-out infinite alternate;
-    will-change: transform;
-  }
-
-  .hero-text {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    padding: 0 1rem;
-    /* Sincronización: El texto se mueve mientras la imagen escala */
-    animation: sync-slide 10s ease-in-out infinite alternate;
-    will-change: transform;
-  }
-
-  /* --- ANIMACIONES SINCRONIZADAS --- */
-
-  /* La imagen crece y se encoge */
-  @keyframes sync-zoom {
-    from {
-      transform: scale(1);
+    .hero-section {
+        position: relative;
+        width: 100%;
+        height: 100dvh;
+        overflow: hidden; /* Corta cualquier cosa que salga de los bordes */
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    to {
-      transform: scale(1.15);
-    }
-  }
 
-  /* El texto se mueve suavemente de izquierda a derecha */
-  /* Usamos porcentajes pequeños para evitar el overflow en X */
-  @keyframes sync-slide {
-    from {
-      transform: translateX(-3%);
-    }
-    to {
-      transform: translateX(3%);
-    }
-  }
-
-  /* Responsivo: En móviles reducimos la intensidad para evitar mareos */
-  @media (max-width: 768px) {
-    .hero-text {
-      animation: sync-slide-mobile 10s ease-in-out infinite alternate;
-    }
-    
-    @keyframes sync-slide-mobile {
-      from { transform: translateX(-15px); }
-      to { transform: translateX(15px); }
+    .hero-image-container {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
     }
 
     .hero-image {
-      animation-duration: 12s; /* Un poco más lento en móvil es más elegante */
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* Sincronización: 10 segundos, misma curva de tiempo */
+        animation: sync-zoom 10s ease-in-out infinite alternate;
+        will-change: transform;
     }
-  }
+
+    .hero-text {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        padding: 0 1rem;
+        /* Sincronización: El texto se mueve mientras la imagen escala */
+        animation: sync-slide 10s ease-in-out infinite alternate;
+        will-change: transform;
+    }
+
+    /* --- ANIMACIONES SINCRONIZADAS --- */
+
+    /* La imagen crece y se encoge */
+    @keyframes sync-zoom {
+        from {
+            transform: scale(1);
+        }
+        to {
+            transform: scale(1.15);
+        }
+    }
+
+    /* El texto se mueve suavemente de izquierda a derecha */
+    /* Usamos porcentajes pequeños para evitar el overflow en X */
+    @keyframes sync-slide {
+        from {
+            transform: translateX(-3%);
+        }
+        to {
+            transform: translateX(3%);
+        }
+    }
+
+    /* Responsivo: En móviles reducimos la intensidad para evitar mareos */
+    @media (max-width: 768px) {
+        .hero-text {
+            animation: sync-slide-mobile 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes sync-slide-mobile {
+            from {
+                transform: translateX(-15px);
+            }
+            to {
+                transform: translateX(15px);
+            }
+        }
+
+        .hero-image {
+            animation-duration: 12s; /* Un poco más lento en móvil es más elegante */
+        }
+    }
 </style>
