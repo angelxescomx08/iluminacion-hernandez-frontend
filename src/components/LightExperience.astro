@@ -1,0 +1,193 @@
+---
+import { Picture } from "astro:assets";
+
+import imgWarm from "../assets/images/light-experience/calida.webp";
+import imgNeutral from "../assets/images/light-experience/neutral.webp";
+import imgCool from "../assets/images/light-experience/fria.webp";
+---
+
+<section class="py-10 md:py-14 xl:py-20 bg-white overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 lg:items-center">
+      <div class="w-full lg:w-1/2 space-y-6 lg:space-y-8 order-1 lg:order-2">
+        <div class="space-y-3 lg:space-y-4 text-center lg:text-left">
+          <h2
+            class="text-[10px] uppercase tracking-[0.5em] text-neutral-400 font-bold"
+          >
+            Guía de Ambientes
+          </h2>
+          <h3
+            class="text-2xl md:text-4xl xl:text-5xl font-montserrat font-light text-neutral-900 leading-tight"
+          >
+            Diseña con la <span class="italic font-serif text-amber-600"
+              >temperatura</span
+            > ideal.
+          </h3>
+        </div>
+
+        <div class="grid gap-3 lg:gap-4 max-w-xl mx-auto lg:ml-0">
+          <button
+            class="btn-temp active-warm group p-4 sm:p-5 text-left border-2 rounded-2xl transition-all duration-300"
+            data-target="warm"
+          >
+            <div class="flex justify-between items-center mb-1 lg:mb-2">
+              <span
+                class="font-montserrat font-bold uppercase tracking-widest text-xs sm:text-sm"
+                >Luz Cálida</span
+              >
+              <div
+                class="dot w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_10px_#fbbf24]"
+              >
+              </div>
+            </div>
+            <p class="text-neutral-500 text-[11px] sm:text-xs md:text-sm">
+              Atmósfera acogedora, perfecta para el descanso en salas y
+              recámaras.
+            </p>
+          </button>
+
+          <button
+            class="btn-temp group p-4 sm:p-5 text-left border-2 border-neutral-100 rounded-2xl transition-all duration-300"
+            data-target="neutral"
+          >
+            <div class="flex justify-between items-center mb-1 lg:mb-2">
+              <span
+                class="font-montserrat font-bold uppercase tracking-widest text-xs sm:text-sm text-neutral-700"
+                >Luz Neutra</span
+              >
+              <div class="dot w-3 h-3 rounded-full bg-neutral-300"></div>
+            </div>
+            <p class="text-neutral-500 text-[11px] sm:text-xs md:text-sm">
+              Claridad natural. Recomendada para cocinas y áreas de lectura.
+            </p>
+          </button>
+
+          <button
+            class="btn-temp group p-4 sm:p-5 text-left border-2 border-neutral-100 rounded-2xl transition-all duration-300"
+            data-target="cool"
+          >
+            <div class="flex justify-between items-center mb-1 lg:mb-2">
+              <span
+                class="font-montserrat font-bold uppercase tracking-widest text-xs sm:text-sm text-neutral-700"
+                >Luz Fría</span
+              >
+              <div class="dot w-3 h-3 rounded-full bg-blue-300"></div>
+            </div>
+            <p class="text-neutral-500 text-[11px] sm:text-xs md:text-sm">
+              Luz estimulante y nítida. Ideal para oficinas y zonas de trabajo.
+            </p>
+          </button>
+        </div>
+      </div>
+
+      <div class="w-full lg:w-1/2 order-2 lg:order-1">
+        <div
+          class="relative aspect-4/3 sm:aspect-video lg:aspect-4/3 rounded-3xl overflow-hidden shadow-2xl border border-neutral-50 bg-neutral-100"
+        >
+          <div id="display-warm" class="temp-img active">
+            <Picture
+              src={imgWarm}
+              alt="Luz Cálida"
+              formats={["avif", "webp"]}
+              widths={[480, 800, 1200, 1920]}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              class="w-full h-full object-cover"
+              loading="lazy"
+              inferSize={true}
+            />
+          </div>
+          <div id="display-neutral" class="temp-img">
+            <Picture
+              src={imgNeutral}
+              alt="Luz Neutra"
+              formats={["avif", "webp"]}
+              widths={[480, 800, 1200, 1920]}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              class="w-full h-full object-cover"
+              loading="lazy"
+              inferSize={true}
+            />
+          </div>
+          <div id="display-cool" class="temp-img">
+            <Picture
+              src={imgCool}
+              alt="Luz Fría"
+              formats={["avif", "webp"]}
+              widths={[480, 800, 1200, 1920]}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              class="w-full h-full object-cover"
+              loading="lazy"
+              inferSize={true}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- Animación de las Imágenes --- */
+  .temp-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    z-index: 1;
+  }
+  .temp-img.active {
+    opacity: 1;
+    z-index: 10;
+  }
+  .temp-img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* --- Estados Activos --- */
+  .btn-temp.active-warm {
+    border-color: #fbbf24;
+    background-color: #fffbeb;
+  }
+  .btn-temp.active-neutral {
+    border-color: #a3a3a3;
+    background-color: #f5f5f5;
+  }
+  .btn-temp.active-cool {
+    border-color: #60a5fa;
+    background-color: #eff6ff;
+  }
+
+  .btn-temp:not([class*="active"]) .dot {
+    opacity: 0.3;
+    filter: grayscale(1);
+    transform: scale(0.9);
+  }
+</style>
+
+<script>
+  function setupLightExperience() {
+    const buttons = document.querySelectorAll(".btn-temp");
+    const imageContainers = document.querySelectorAll(".temp-img");
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = btn.getAttribute("data-target");
+        buttons.forEach((b) => {
+          b.classList.remove("active-warm", "active-neutral", "active-cool");
+          b.classList.add("border-neutral-100");
+        });
+        imageContainers.forEach((img) => img.classList.remove("active"));
+        btn.classList.remove("border-neutral-100");
+        btn.classList.add(`active-${target}`);
+        const targetContainer = document.getElementById(`display-${target}`);
+        if (targetContainer) targetContainer.classList.add("active");
+      });
+    });
+  }
+  setupLightExperience();
+  document.addEventListener("astro:page-load", setupLightExperience);
+</script>
