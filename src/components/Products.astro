@@ -1,0 +1,130 @@
+---
+import { Picture } from "astro:assets";
+// Import de prueba solicitado (en producción usarías las fotos reales de cada producto)
+import imgPlaceholder from "../assets/images/light-experience/calida.webp";
+
+// Datos de prueba (Mock Data) para simular productos
+const featuredProducts = [
+  {
+    id: 1,
+    name: "Lámpara Colgante Aura",
+    category: "Techo / Minimalista",
+    price: "$4,200",
+    image: imgPlaceholder,
+    badge: "Nuevo",
+  },
+  {
+    id: 2,
+    name: "Arbotante Industrial T-40",
+    category: "Pared / Industrial",
+    price: "$2,850",
+    image: imgPlaceholder,
+    badge: null,
+  },
+  {
+    id: 3,
+    name: "Lámpara de Pie Arco",
+    category: "Piso / Moderno",
+    price: "$5,400",
+    image: imgPlaceholder,
+    badge: "Best Seller",
+  },
+];
+---
+
+<section class="py-20 md:py-28 bg-white">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
+      <h2
+        class="text-[10px] uppercase tracking-[0.5em] text-amber-600 font-bold"
+      >
+        Curaduría Exclusiva
+      </h2>
+      <h3
+        class="text-3xl md:text-4xl font-montserrat font-bold text-neutral-900 leading-tight"
+      >
+        Piezas que <span class="italic font-serif">definen</span> un espacio.
+      </h3>
+      <p
+        class="text-neutral-500 text-sm md:text-base leading-relaxed font-inter"
+      >
+        Selección de nuestros modelos más icónicos, diseñados para aportar
+        carácter y calidez a tu hogar.
+      </p>
+    </div>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14"
+    >
+      {
+        featuredProducts.map((product) => (
+          <a href={`/producto/${product.id}`} class="group block">
+            <div class="relative aspect-3/4 rounded-3xl overflow-hidden bg-neutral-100 mb-6 shadow-sm transition-shadow duration-500 group-hover:shadow-xl">
+              {product.badge && (
+                <div class="absolute top-4 left-4 z-20">
+                  <span class="inline-block bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-neutral-900 shadow-sm">
+                    {product.badge}
+                  </span>
+                </div>
+              )}
+
+              <div class="w-full h-full transition-transform duration-700 ease-in-out group-hover:scale-105">
+                <Picture
+                  src={product.image}
+                  alt={product.name}
+                  formats={["avif", "webp"]}
+                  widths={[400, 600, 800]}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                  inferSize={true}
+                />
+              </div>
+
+              <div class="absolute inset-0 bg-neutral-900/0 transition-colors duration-300 group-hover:bg-neutral-900/10 z-10" />
+              <div class="absolute bottom-0 left-0 w-full p-4 translate-y-full transition-transform duration-500 ease-in-out group-hover:translate-y-0 z-20">
+                <button class="w-full bg-white/95 backdrop-blur-md text-neutral-900 py-3 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg hover:bg-amber-500 hover:text-white transition-colors">
+                  Ver Detalles
+                </button>
+              </div>
+            </div>
+
+            <div class="text-center space-y-1">
+              <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-bold">
+                {product.category}
+              </p>
+              <h4 class="font-montserrat font-bold text-lg text-neutral-900 group-hover:text-amber-600 transition-colors">
+                {product.name}
+              </h4>
+              <p class="font-inter font-medium text-neutral-700 pt-1">
+                {product.price}
+              </p>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="mt-20 text-center">
+      <a
+        href="/tienda"
+        class="inline-flex items-center gap-2 border-b-2 border-neutral-900 pb-1 text-sm font-bold uppercase tracking-widest hover:text-amber-600 hover:border-amber-600 transition-all group"
+      >
+        Explorar Catálogo Completo
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="w-4 h-4 group-hover:translate-x-1 transition-transform"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
