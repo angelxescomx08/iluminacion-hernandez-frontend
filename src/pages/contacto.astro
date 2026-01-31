@@ -1,0 +1,319 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Contacto | Iluminación Hernández">
+    <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-12 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="mb-12 border-l-4 border-amber-500 pl-6">
+                <h1
+                    class="text-3xl md:text-5xl font-montserrat font-black text-neutral-800 tracking-tight uppercase"
+                >
+                    Contacto
+                </h1>
+                <p
+                    class="text-neutral-500 mt-2 font-inter text-sm md:text-base"
+                >
+                    Iluminación Hernández
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <section class="lg:col-span-7">
+                    <div
+                        class="bg-white border border-neutral-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] rounded-3xl p-8 md:p-10"
+                    >
+                        <h2
+                            class="text-xl font-montserrat font-bold text-neutral-800 mb-8 tracking-tight"
+                        >
+                            Envíanos un mensaje
+                        </h2>
+
+                        <form class="space-y-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="form-control w-full">
+                                    <label class="label pb-1.5">
+                                        <span
+                                            class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
+                                            >Nombre completo</span
+                                        >
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="Ej. Juan Pérez"
+                                        class="input input-bordered h-11 bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full text-sm font-inter"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-control w-full">
+                                    <label class="label pb-1.5">
+                                        <span
+                                            class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
+                                            >Teléfono Celular</span
+                                        >
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        placeholder="55 0000 0000"
+                                        class="input input-bordered h-11 bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full text-sm font-inter"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="form-control w-full">
+                                <label class="label pb-1.5">
+                                    <span
+                                        class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
+                                        >Correo electrónico</span
+                                    >
+                                </label>
+                                <input
+                                    type="email"
+                                    placeholder="contacto@ejemplo.com"
+                                    class="input input-bordered h-11 bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full text-sm font-inter"
+                                    required
+                                />
+                            </div>
+
+                            <div class="form-control w-full">
+                                <label class="label pb-1.5">
+                                    <span
+                                        class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
+                                        >¿Cómo podemos ayudarte?</span
+                                    >
+                                </label>
+                                <textarea
+                                    class="textarea textarea-bordered bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full h-32 text-sm font-inter resize-none"
+                                    placeholder="Escribe tu mensaje..."
+                                ></textarea>
+                            </div>
+
+                            <button
+                                class="btn btn-neutral btn-block h-12 rounded-xl text-white font-montserrat font-bold tracking-widest text-[11px] shadow-md hover:bg-amber-600 transition-all active:scale-[0.98]"
+                            >
+                                ENVIAR MENSAJE
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <aside class="lg:col-span-5 space-y-10">
+                    <div>
+                        <h3
+                            class="text-xs font-bold text-amber-600 uppercase tracking-[0.3em] mb-6"
+                        >
+                            Atención al Cliente
+                        </h3>
+
+                        <div class="space-y-8">
+                            <div class="flex items-start gap-4">
+                                <div class="shrink-0 text-amber-500 mt-1">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="w-5 h-5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        ><path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                        ></path><path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                        ></path></svg
+                                    >
+                                </div>
+                                <div class="font-inter">
+                                    <p
+                                        class="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-1"
+                                    >
+                                        Visítanos
+                                    </p>
+                                    <p
+                                        class="text-sm text-neutral-700 font-medium"
+                                    >
+                                        Victoria 31, Pasillo de acceso centro,<br
+                                        />Cuauhtémoc, CDMX
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="shrink-0 text-green-600 mt-1">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="w-5 h-5"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                        ><path
+                                            d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.964 9.964 0 001.333 4.993L2 22l5.102-1.339a9.916 9.916 0 004.91 1.294h.005c5.507 0 9.99-4.478 9.99-9.984 0-2.669-1.037-5.176-2.922-7.062A9.935 9.935 0 0012.012 2z"
+                                        ></path></svg
+                                    >
+                                </div>
+                                <div class="font-inter">
+                                    <p
+                                        class="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-1"
+                                    >
+                                        WhatsApp
+                                    </p>
+                                    <p
+                                        class="text-sm text-neutral-700 font-bold tracking-tight"
+                                    >
+                                        55 6302 8712
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="shrink-0 text-neutral-400 mt-1">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="w-5 h-5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        ><path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M3 5.25l.623 2.492a1.125 1.125 0 01-.482 1.235l-1.42 1.065c-.482.362-.647.98-.386 1.512a15.25 15.25 0 006.132 6.132c.532.261 1.15.096 1.512-.386l1.065-1.42a1.125 1.125 0 011.235-.482l2.492.623a1.125 1.125 0 01.852 1.091V21a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75a2.25 2.25 0 012.25-2.25h1.372c.516 0 .966.351 1.091.852z"
+                                        ></path></svg
+                                    >
+                                </div>
+                                <div class="font-inter">
+                                    <p
+                                        class="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-1"
+                                    >
+                                        Conmutador
+                                    </p>
+                                    <p
+                                        class="text-sm text-neutral-700 font-medium"
+                                    >
+                                        55 5512 4169 <span
+                                            class="text-neutral-400 ml-1 text-xs"
+                                            >Ext. 121 y 122</span
+                                        >
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="shrink-0 text-neutral-400 mt-1">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="w-5 h-5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        ><path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0l-8.743 6.12a1.125 1.125 0 01-1.314 0L3 6.75"
+                                        ></path></svg
+                                    >
+                                </div>
+                                <div class="font-inter">
+                                    <p
+                                        class="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-1"
+                                    >
+                                        Correo Directo
+                                    </p>
+                                    <p
+                                        class="text-xs text-neutral-700 font-medium break-all"
+                                    >
+                                        iluminacion.hernandez.ventas@gmail.com
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-8 border-t border-neutral-100">
+                        <p
+                            class="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em] mb-4 text-center lg:text-left"
+                        >
+                            Síguenos en Redes
+                        </p>
+                        <div class="flex gap-4 justify-center lg:justify-start">
+                            <a
+                                href="https://www.facebook.com/profile.php?id=61585753828406"
+                                target="_blank"
+                                class="btn btn-ghost btn-circle bg-neutral-50 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    ><path
+                                        d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                                    ></path></svg
+                                >
+                            </a>
+                            <a
+                                href="https://www.instagram.com/iluminacion_hernandez/"
+                                target="_blank"
+                                class="btn btn-ghost btn-circle bg-neutral-50 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    ><rect
+                                        x="2"
+                                        y="2"
+                                        width="20"
+                                        height="20"
+                                        rx="5"
+                                        ry="5"></rect><path
+                                        d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"
+                                    ></path><line
+                                        x1="17.5"
+                                        y1="6.5"
+                                        x2="17.51"
+                                        y2="6.5"></line></svg
+                                >
+                            </a>
+                            <a
+                                href="https://www.tiktok.com/@iluminacin.hernnde"
+                                target="_blank"
+                                class="btn btn-ghost btn-circle bg-neutral-50 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    ><path
+                                        d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"
+                                    ></path></svg
+                                >
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+</Layout>
