@@ -7,6 +7,9 @@ import {
     images3,
     images4,
 } from "../assets/images/lookbook-section/images";
+
+/** Índices para duplicar la columna (tren superior + tren clon); el desplazamiento -50% es un período exacto. */
+const MARQUEE_SEGMENTS = [0, 1] as const;
 ---
 
 <section class="py-12 bg-white overflow-hidden">
@@ -25,87 +28,113 @@ import {
         </div>
 
         <div class="relative h-[600px] md:h-[800px] overflow-hidden">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 h-full">
-                <div class="scroll-column up" style="--duration: 18s;">
+            <div class="lookbook-marquee-root grid grid-cols-2 md:grid-cols-4 gap-4 h-full">
+                <div class="scroll-column up">
                     <div class="scroll-content">
                         {
-                            images1.map((img) => (
-                                <div class="item aspect-3/4">
-                                    <Picture
-                                        src={img}
-                                        alt="Luz"
-                                        formats={["avif", "webp"]}
-                                        widths={[400]}
-                                        class="w-full h-full object-cover rounded-3xl"
-                                        inferSize={true}
-                                        loading="lazy"
-                                    />
+                            MARQUEE_SEGMENTS.map((segment) => (
+                                <div
+                                    class="scroll-set"
+                                    aria-hidden={segment === 1 ? "true" : undefined}
+                                >
+                                    {images1.map((img) => (
+                                        <div class="item aspect-3/4">
+                                            <Picture
+                                                src={img}
+                                                alt="Luz"
+                                                formats={["avif", "webp"]}
+                                                widths={[400]}
+                                                class="w-full h-full object-cover rounded-3xl"
+                                                inferSize={true}
+                                                loading="eager"
+                                                decoding="async"
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
                             ))
                         }
                     </div>
                 </div>
 
-                <div class="scroll-column down" style="--duration: 35s;">
+                <div class="scroll-column down">
                     <div class="scroll-content">
                         {
-                            images2.map((img) => (
-                                <div class="item aspect-square">
-                                    <Picture
-                                        src={img}
-                                        alt="Luz"
-                                        formats={["avif", "webp"]}
-                                        widths={[400]}
-                                        class="w-full h-full object-cover rounded-3xl"
-                                        inferSize={true}
-                                        loading="lazy"
-                                    />
+                            MARQUEE_SEGMENTS.map((segment) => (
+                                <div
+                                    class="scroll-set"
+                                    aria-hidden={segment === 1 ? "true" : undefined}
+                                >
+                                    {images2.map((img) => (
+                                        <div class="item aspect-square">
+                                            <Picture
+                                                src={img}
+                                                alt="Luz"
+                                                formats={["avif", "webp"]}
+                                                widths={[400]}
+                                                class="w-full h-full object-cover rounded-3xl"
+                                                inferSize={true}
+                                                loading="eager"
+                                                decoding="async"
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
                             ))
                         }
                     </div>
                 </div>
 
-                <div
-                    class="scroll-column up hidden md:flex"
-                    style="--duration: 25s;"
-                >
+                <div class="scroll-column up hidden md:flex">
                     <div class="scroll-content">
                         {
-                            images3.map((img) => (
-                                <div class="item aspect-4/5">
-                                    <Picture
-                                        src={img}
-                                        alt="Luz"
-                                        formats={["avif", "webp"]}
-                                        widths={[400]}
-                                        class="w-full h-full object-cover rounded-3xl"
-                                        inferSize={true}
-                                        loading="lazy"
-                                    />
+                            MARQUEE_SEGMENTS.map((segment) => (
+                                <div
+                                    class="scroll-set"
+                                    aria-hidden={segment === 1 ? "true" : undefined}
+                                >
+                                    {images3.map((img) => (
+                                        <div class="item aspect-4/5">
+                                            <Picture
+                                                src={img}
+                                                alt="Luz"
+                                                formats={["avif", "webp"]}
+                                                widths={[400]}
+                                                class="w-full h-full object-cover rounded-3xl"
+                                                inferSize={true}
+                                                loading="eager"
+                                                decoding="async"
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
                             ))
                         }
                     </div>
                 </div>
 
-                <div
-                    class="scroll-column down hidden md:flex"
-                    style="--duration: 45s;"
-                >
+                <div class="scroll-column down hidden md:flex">
                     <div class="scroll-content">
                         {
-                            images4.map((img) => (
-                                <div class="item aspect-2/3">
-                                    <Picture
-                                        src={img}
-                                        alt="Luz"
-                                        formats={["avif", "webp"]}
-                                        widths={[400]}
-                                        class="w-full h-full object-cover rounded-3xl"
-                                        inferSize={true}
-                                        loading="lazy"
-                                    />
+                            MARQUEE_SEGMENTS.map((segment) => (
+                                <div
+                                    class="scroll-set"
+                                    aria-hidden={segment === 1 ? "true" : undefined}
+                                >
+                                    {images4.map((img) => (
+                                        <div class="item aspect-2/3">
+                                            <Picture
+                                                src={img}
+                                                alt="Luz"
+                                                formats={["avif", "webp"]}
+                                                widths={[400]}
+                                                class="w-full h-full object-cover rounded-3xl"
+                                                inferSize={true}
+                                                loading="eager"
+                                                decoding="async"
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
                             ))
                         }
@@ -120,13 +149,25 @@ import {
     .scroll-column {
         position: relative;
         height: 100%;
-        will-change: transform;
+        min-height: 0;
+        overflow: hidden;
+        --duration: 40s;
     }
 
     .scroll-content {
         display: flex;
         flex-direction: column;
-        gap: 1rem; /* gap-4 de Tailwind */
+        gap: 1rem;
+        width: 100%;
+        will-change: transform;
+        backface-visibility: hidden;
+    }
+
+    .scroll-set {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        flex-shrink: 0;
     }
 
     .item {
@@ -134,25 +175,25 @@ import {
         flex-shrink: 0;
     }
 
-    /* --- ANIMACIONES CON TIEMPOS DIFERENTES --- */
-
-    /* Subida: De 0 a la mitad exacta menos medio gap */
+    /*
+     * Dos .scroll-set idénticos: la altura total es 2×bloque + 1rem entre bloques.
+     * Desplazar exactamente la mitad (-50% - medio gap) alinea el clon con el original sin solapar a blanco.
+     */
     @keyframes scrollUp {
         0% {
-            transform: translateY(0);
+            transform: translate3d(0, 0, 0);
         }
         100% {
-            transform: translateY(calc(-50% - 0.5rem));
+            transform: translate3d(0, calc(-50% - 0.5rem), 0);
         }
     }
 
-    /* Bajada: De la mitad a 0 */
     @keyframes scrollDown {
         0% {
-            transform: translateY(calc(-50% - 0.5rem));
+            transform: translate3d(0, calc(-50% - 0.5rem), 0);
         }
         100% {
-            transform: translateY(0);
+            transform: translate3d(0, 0, 0);
         }
     }
 
@@ -164,8 +205,67 @@ import {
         animation: scrollDown var(--duration) linear infinite;
     }
 
-    /* Forzamos que nunca se detenga */
     .scroll-column:hover .scroll-content {
         animation-play-state: running;
     }
 </style>
+
+<script>
+    const PX_PER_SEC = 48;
+    const MIN_SEC = 20;
+    const MAX_SEC = 120;
+
+    let marqueeResizeObserver: ResizeObserver | null = null;
+
+    function syncLookbookMarqueeSpeed() {
+        const root = document.querySelector(".lookbook-marquee-root");
+        if (!root) return;
+
+        root.querySelectorAll(".scroll-column").forEach((node) => {
+            if (!(node instanceof HTMLElement)) return;
+
+            const content = node.querySelector(".scroll-content");
+            if (!(content instanceof HTMLElement)) return;
+
+            const h = content.offsetHeight;
+            if (h < 48) return;
+
+            const loopPx = h * 0.5;
+            const sec = Math.min(
+                MAX_SEC,
+                Math.max(MIN_SEC, loopPx / PX_PER_SEC),
+            );
+            node.style.setProperty("--duration", `${sec.toFixed(2)}s`);
+        });
+    }
+
+    function bindLookbookMarqueeResizeObserver() {
+        marqueeResizeObserver?.disconnect();
+        const root = document.querySelector(".lookbook-marquee-root");
+        if (!root) return;
+        const observer = new ResizeObserver(() => syncLookbookMarqueeSpeed());
+        marqueeResizeObserver = observer;
+        root.querySelectorAll(".scroll-content").forEach((el) =>
+            observer.observe(el),
+        );
+    }
+
+    function initLookbookMarquee() {
+        syncLookbookMarqueeSpeed();
+        bindLookbookMarqueeResizeObserver();
+    }
+
+    let resizeDebounce = 0;
+    window.addEventListener("resize", () => {
+        window.clearTimeout(resizeDebounce);
+        resizeDebounce = window.setTimeout(syncLookbookMarqueeSpeed, 120);
+    });
+
+    initLookbookMarquee();
+    requestAnimationFrame(() => {
+        syncLookbookMarqueeSpeed();
+        requestAnimationFrame(syncLookbookMarqueeSpeed);
+    });
+
+    document.addEventListener("astro:page-load", initLookbookMarquee);
+</script>
