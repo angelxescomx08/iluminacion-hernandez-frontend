@@ -1,0 +1,41 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Cerrar sesión | Iluminación Hernández">
+    <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-16 px-6">
+        <div class="max-w-md mx-auto text-center">
+            <p id="logout-status" class="font-inter text-neutral-600">
+                Cerrando sesión…
+            </p>
+        </div>
+    </main>
+</Layout>
+
+<script>
+    import { tryCreateBrowserAuthGateway } from "../auth/client/create-browser-auth-gateway";
+    import { logout } from "../auth/application/logout.use-case";
+
+    const status = document.getElementById("logout-status");
+    const gateway = tryCreateBrowserAuthGateway();
+
+    async function run() {
+        if (!gateway) {
+            if (status) {
+                status.textContent =
+                    "No se pudo contactar el API (PUBLIC_API_URL). Redirigiendo al inicio.";
+            }
+            window.setTimeout(() => window.location.assign("/"), 2000);
+            return;
+        }
+        const result = await logout(gateway);
+        if (status) {
+            status.textContent = result.ok
+                ? "Sesión cerrada. Redirigiendo…"
+                : `${result.message} — Redirigiendo al inicio…`;
+        }
+        window.setTimeout(() => window.location.assign("/"), 1200);
+    }
+
+    void run();
+</script>

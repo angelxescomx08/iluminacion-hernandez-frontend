@@ -1,0 +1,192 @@
+---
+const postRegisterPath = Astro.url.searchParams.get("redirect") ?? "/";
+---
+
+<div
+    class="bg-white border border-neutral-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] rounded-3xl p-8 md:p-10"
+>
+    <h2
+        class="text-xl font-montserrat font-bold text-neutral-800 mb-2 tracking-tight"
+    >
+        Crear cuenta
+    </h2>
+    <p class="text-sm text-neutral-500 font-inter mb-8">
+        Regístrate con correo y contraseña (mínimo 8 caracteres).
+    </p>
+
+    <div id="register-config" data-redirect={postRegisterPath} class="hidden"
+    ></div>
+
+    <div
+        id="register-env-alert"
+        class="alert alert-warning text-sm mb-6 hidden"
+        role="alert"
+    >
+        Falta <code class="text-xs">PUBLIC_API_URL</code> en el entorno del
+        front. Añade la URL base del API (por ejemplo
+        <code class="text-xs">http://localhost:3000</code>).
+    </div>
+
+    <div
+        id="register-error"
+        class="alert alert-error text-sm mb-6 hidden"
+        role="alert"
+    ></div>
+
+    <form id="register-form" class="space-y-5">
+        <div class="form-control w-full">
+            <label class="label pb-1.5" for="register-name">
+                <span
+                    class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
+                    >Nombre</span
+                >
+            </label>
+            <input
+                id="register-name"
+                name="name"
+                type="text"
+                autocomplete="name"
+                required
+                class="input input-bordered h-11 bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full text-sm font-inter"
+                placeholder="Tu nombre"
+            />
+        </div>
+
+        <div class="form-control w-full">
+            <label class="label pb-1.5" for="register-email">
+                <span
+                    class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
+                    >Correo electrónico</span
+                >
+            </label>
+            <input
+                id="register-email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                class="input input-bordered h-11 bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full text-sm font-inter"
+                placeholder="tu@correo.com"
+            />
+        </div>
+
+        <div class="form-control w-full">
+            <label class="label pb-1.5" for="register-password">
+                <span
+                    class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
+                    >Contraseña</span
+                >
+            </label>
+            <input
+                id="register-password"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                required
+                minlength="8"
+                class="input input-bordered h-11 bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full text-sm font-inter"
+                placeholder="Mínimo 8 caracteres"
+            />
+        </div>
+
+        <label class="label cursor-pointer justify-start gap-3 py-0">
+            <input
+                id="register-remember"
+                name="rememberMe"
+                type="checkbox"
+                class="checkbox checkbox-sm checkbox-neutral rounded border-neutral-300"
+            />
+            <span class="label-text text-sm text-neutral-600 font-inter"
+                >Mantener sesión iniciada</span
+            >
+        </label>
+
+        <button
+            type="submit"
+            id="register-submit"
+            class="btn btn-neutral btn-block h-12 rounded-xl text-white font-montserrat font-bold tracking-widest text-[11px] shadow-md hover:bg-amber-600 transition-all active:scale-[0.98]"
+        >
+            REGISTRARSE
+        </button>
+    </form>
+
+    <p class="text-center text-sm text-neutral-500 font-inter mt-8">
+        ¿Ya tienes cuenta?
+        <a href="/login" class="link link-primary font-semibold text-amber-600"
+            >Iniciar sesión</a
+        >
+    </p>
+</div>
+
+<script>
+    import { tryCreateBrowserAuthGateway } from "../../auth/client/create-browser-auth-gateway";
+    import { registerWithEmail } from "../../auth/application/register-with-email.use-case";
+
+    const cfg = document.getElementById("register-config");
+    const redirectPath =
+        cfg instanceof HTMLElement ? cfg.dataset.redirect ?? "/" : "/";
+
+    const envAlert = document.getElementById("register-env-alert");
+    const errorBox = document.getElementById("register-error");
+    const form = document.getElementById("register-form");
+    const submitBtn = document.getElementById("register-submit");
+
+    const gateway = tryCreateBrowserAuthGateway();
+    if (!gateway && envAlert) {
+        envAlert.classList.remove("hidden");
+    }
+
+    function showError(message: string) {
+        if (!errorBox) return;
+        errorBox.textContent = message;
+        errorBox.classList.remove("hidden");
+    }
+
+    function hideError() {
+        errorBox?.classList.add("hidden");
+    }
+
+    function setLoading(loading: boolean) {
+        if (submitBtn instanceof HTMLButtonElement) {
+            submitBtn.disabled = loading;
+            submitBtn.classList.toggle("btn-loading", loading);
+        }
+    }
+
+    form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        hideError();
+        if (!gateway) {
+            showError("Configura PUBLIC_API_URL para registrarte.");
+            return;
+        }
+        const nameInput = document.getElementById("register-name");
+        const emailInput = document.getElementById("register-email");
+        const passwordInput = document.getElementById("register-password");
+        const rememberInput = document.getElementById("register-remember");
+        if (
+            !(nameInput instanceof HTMLInputElement) ||
+            !(emailInput instanceof HTMLInputElement) ||
+            !(passwordInput instanceof HTMLInputElement)
+        ) {
+            return;
+        }
+        setLoading(true);
+        const result = await registerWithEmail(gateway, {
+            name: nameInput.value,
+            email: emailInput.value,
+            password: passwordInput.value,
+            rememberMe:
+                rememberInput instanceof HTMLInputElement
+                    ? rememberInput.checked
+                    : undefined,
+            callbackURL: `${window.location.origin}${redirectPath}`,
+        });
+        setLoading(false);
+        if (result.ok) {
+            window.location.assign(redirectPath);
+            return;
+        }
+        showError(result.message);
+    });
+</script>
