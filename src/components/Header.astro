@@ -1,10 +1,14 @@
 ---
-// Header.astro - Optimizado y sin overflows
+// Header.astro — sesión reflejada en cliente vía GET /api/v1/auth/session
 ---
 
 <header
     class="sticky top-0 z-100 w-full bg-white/90 backdrop-blur-xl border-b border-neutral-100/50"
 >
+    <p class="sr-only" aria-live="polite" data-session-live>
+        Comprobando sesión…
+    </p>
+
     <div class="drawer">
         <input id="main-drawer" type="checkbox" class="drawer-toggle" />
 
@@ -107,13 +111,28 @@
                     </ul>
                 </div>
 
-                <div class="navbar-end flex-none gap-1 sm:gap-4">
+                <div
+                    class="navbar-end flex-none flex items-center gap-1 sm:gap-2 md:gap-4 min-w-0"
+                    data-header-session-nav
+                >
+                    <div
+                        class="hidden lg:flex flex-col items-end justify-center min-w-0 max-w-44 pr-1 border-r border-neutral-100/80 mr-1"
+                    >
+                        <span
+                            data-session-primary-line
+                            class="text-[11px] font-inter font-bold text-neutral-800 truncate max-w-full"
+                            >Invitado</span
+                        >
+                    </div>
+
                     <a
                         href="/login"
-                        class="btn btn-ghost btn-sm hidden sm:inline-flex font-inter font-bold text-[11px] uppercase tracking-widest text-neutral-600 hover:text-amber-600"
+                        data-session-desktop-login
+                        class="btn btn-ghost btn-sm hidden sm:inline-flex font-inter font-bold text-[11px] uppercase tracking-widest text-neutral-600 hover:text-amber-600 shrink-0"
                     >
                         Entrar
                     </a>
+
                     <button
                         class="btn btn-ghost btn-circle shrink-0 group"
                         aria-label="Carrito"
@@ -143,44 +162,68 @@
                     <div class="dropdown dropdown-end shrink-0">
                         <label
                             tabindex="0"
-                            class="btn btn-ghost btn-circle avatar border-2 border-neutral-50 hover:border-amber-200 transition-all shadow-sm"
+                            data-session-avatar-trigger
+                            aria-label="Menú de cuenta"
+                            class="btn btn-ghost btn-circle avatar border-2 border-neutral-100 hover:border-amber-200 transition-all shadow-sm p-0 overflow-hidden"
                         >
-                            <div class="w-8 sm:w-9 rounded-full">
+                            <span
+                                class="relative block w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden bg-neutral-100"
+                            >
                                 <img
-                                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
-                                    alt="Avatar"
+                                    data-session-avatar-img
+                                    class="absolute inset-0 h-full w-full object-cover hidden"
+                                    alt=""
+                                    width="36"
+                                    height="36"
+                                    decoding="async"
                                 />
-                            </div>
+                                <span
+                                    data-session-avatar-fallback
+                                    class="absolute inset-0 flex items-center justify-center bg-neutral-200 text-[11px] font-bold text-neutral-600"
+                                >
+                                    <span data-session-avatar-initials>?</span>
+                                </span>
+                            </span>
                         </label>
                         <ul
                             tabindex="0"
-                            class="menu menu-sm dropdown-content mt-4 z-1 p-3 shadow-2xl bg-white rounded-2xl w-52 border border-neutral-50"
+                            class="menu menu-sm dropdown-content mt-4 z-1 p-3 shadow-2xl bg-white rounded-2xl w-56 sm:w-60 border border-neutral-100"
                         >
                             <li
-                                class="menu-title text-[10px] uppercase font-bold tracking-widest text-neutral-400 pb-2"
+                                class="menu-title text-[10px] uppercase font-bold tracking-widest text-neutral-400 pb-1 border-b border-neutral-50 mb-1"
                             >
-                                Cliente VIP
+                                <span data-session-menu-title>Modo invitado</span>
                             </li>
-                            <li>
-                                <a href="/login" class="py-3 font-medium"
+                            <li class="pb-2">
+                                <span
+                                    data-session-menu-subtitle
+                                    class="text-xs font-inter font-medium text-neutral-500 normal-case tracking-normal whitespace-normal"
+                                    >Inicia sesión para guardar preferencias</span
+                                >
+                            </li>
+                            <li data-session-item-login>
+                                <a href="/login" class="py-2.5 font-medium"
                                     >Iniciar sesión</a
                                 >
                             </li>
-                            <li>
-                                <a href="/registro" class="py-3 font-medium"
+                            <li data-session-item-register>
+                                <a href="/registro" class="py-2.5 font-medium"
                                     >Crear cuenta</a
                                 >
                             </li>
-                            <li>
-                                <a href="/perfil" class="py-3 font-medium"
+                            <li data-session-item-panel class="hidden">
+                                <a href="/perfil" class="py-2.5 font-medium"
                                     >Panel Hernández</a
                                 >
                             </li>
-                            <li class="mt-2 border-t border-neutral-50 pt-2">
+                            <li
+                                data-session-item-logout
+                                class="hidden mt-2 border-t border-neutral-50 pt-2"
+                            >
                                 <a
                                     href="/cerrar-sesion"
-                                    class="text-error font-medium"
-                                    >Cerrar Sesión</a
+                                    class="text-error font-medium py-2.5"
+                                    >Cerrar sesión</a
                                 >
                             </li>
                         </ul>
@@ -192,7 +235,10 @@
         <div class="drawer-side z-110">
             <label for="main-drawer" class="drawer-overlay" aria-label="Cerrar"
             ></label>
-            <div class="w-72 min-h-full bg-white flex flex-col p-8 shadow-2xl">
+            <div
+                class="w-72 min-h-full bg-white flex flex-col p-8 shadow-2xl"
+                data-header-session-drawer
+            >
                 <div class="mb-12 flex items-center gap-3">
                     <div
                         class="w-8 h-8 rounded bg-neutral-900 flex items-center justify-center text-amber-400"
@@ -236,43 +282,72 @@
                             >Sucursales</a
                         >
                     </li>
-                    <li>
+                    <li data-session-item-login>
                         <a
                             href="/login"
                             class="hover:text-amber-600 transition-colors"
                             >Iniciar sesión</a
                         >
                     </li>
-                    <li>
+                    <li data-session-item-register>
                         <a
                             href="/registro"
                             class="hover:text-amber-600 transition-colors"
                             >Registro</a
                         >
                     </li>
+                    <li data-session-item-panel class="hidden">
+                        <a
+                            href="/perfil"
+                            class="hover:text-amber-600 transition-colors"
+                            >Panel Hernández</a
+                        >
+                    </li>
+                    <li data-session-item-logout class="hidden">
+                        <a
+                            href="/cerrar-sesion"
+                            class="hover:text-red-600 transition-colors"
+                            >Cerrar sesión</a
+                        >
+                    </li>
                 </ul>
 
                 <div
-                    class="mt-auto flex items-center gap-4 bg-neutral-50 p-4 rounded-2xl"
+                    class="mt-auto flex items-center gap-4 bg-neutral-50 p-4 rounded-2xl border border-neutral-100/80"
                 >
-                    <div
-                        class="w-10 h-10 rounded-full overflow-hidden shadow-sm"
-                    >
-                        <img
-                            src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
-                            alt="Usuario"
-                        />
-                    </div>
-                    <div class="overflow-hidden">
-                        <p
-                            class="text-[11px] font-black text-neutral-800 uppercase truncate"
+                    <div class="shrink-0">
+                        <span
+                            class="relative block w-11 h-11 rounded-full overflow-hidden shadow-sm ring-2 ring-white"
                         >
-                            Panel Usuario
+                            <img
+                                data-session-avatar-img
+                                class="absolute inset-0 h-full w-full object-cover hidden"
+                                alt=""
+                                width="44"
+                                height="44"
+                                decoding="async"
+                            />
+                            <span
+                                data-session-avatar-fallback
+                                class="absolute inset-0 flex items-center justify-center bg-neutral-200 text-xs font-bold text-neutral-600"
+                            >
+                                <span data-session-avatar-initials>?</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="overflow-hidden min-w-0 flex-1">
+                        <span data-session-menu-title class="sr-only"></span>
+                        <p
+                            data-session-primary-line
+                            class="text-[11px] font-black text-neutral-800 uppercase truncate tracking-tight"
+                        >
+                            Invitado
                         </p>
                         <p
-                            class="text-[9px] text-amber-600 font-bold uppercase tracking-tighter"
+                            data-session-menu-subtitle
+                            class="text-[10px] text-neutral-400 font-inter mt-1 line-clamp-2"
                         >
-                            Miembro Hernández
+                            Inicia sesión para una experiencia personalizada
                         </p>
                     </div>
                 </div>
@@ -280,3 +355,21 @@
         </div>
     </div>
 </header>
+
+<script>
+    import { tryCreateBrowserAuthGateway } from "../auth/client/create-browser-auth-gateway";
+    import { loadClientSession } from "../auth/application/load-client-session.use-case";
+    import { applyHeaderSessionToDocument } from "../auth/client/apply-header-session";
+
+    async function syncHeaderSession() {
+        const gateway = tryCreateBrowserAuthGateway();
+        if (!gateway) {
+            applyHeaderSessionToDocument({ kind: "guest" });
+            return;
+        }
+        const session = await loadClientSession(gateway);
+        applyHeaderSessionToDocument(session);
+    }
+
+    void syncHeaderSession();
+</script>
