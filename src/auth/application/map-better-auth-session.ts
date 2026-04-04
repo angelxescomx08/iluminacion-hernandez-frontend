@@ -52,6 +52,7 @@ export function mapBetterAuthSessionPayload(payload: unknown): ClientSession {
     const name = readString(user.name);
     const email = readString(user.email);
     const imageUrl = readString(user.image);
+    const role = readString(user.role);
 
     if (!id && !name && !email) {
         return { kind: "guest" };
@@ -65,6 +66,7 @@ export function mapBetterAuthSessionPayload(payload: unknown): ClientSession {
             displayName,
             email,
             imageUrl,
+            role,
         },
     };
 }

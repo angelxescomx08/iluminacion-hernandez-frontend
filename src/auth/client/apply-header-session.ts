@@ -1,4 +1,5 @@
 import {
+    isAdminClientSession,
     isAuthenticatedSession,
     type ClientSession,
 } from "../domain/client-session";
@@ -15,6 +16,7 @@ type SessionElements = {
     itemLogin: HTMLElement | null;
     itemRegister: HTMLElement | null;
     itemPanel: HTMLElement | null;
+    itemAdmin: HTMLElement | null;
     itemLogout: HTMLElement | null;
     desktopLogin: HTMLElement | null;
 };
@@ -31,6 +33,7 @@ function queryGroup(root: ParentNode): SessionElements {
         itemLogin: root.querySelector("[data-session-item-login]"),
         itemRegister: root.querySelector("[data-session-item-register]"),
         itemPanel: root.querySelector("[data-session-item-panel]"),
+        itemAdmin: root.querySelector("[data-session-item-admin]"),
         itemLogout: root.querySelector("[data-session-item-logout]"),
         desktopLogin: root.querySelector("[data-session-desktop-login]"),
     };
@@ -133,11 +136,13 @@ function bindAvatar(
 
 function applyNavGroup(els: SessionElements, session: ClientSession) {
     const auth = isAuthenticatedSession(session);
+    const admin = isAdminClientSession(session);
 
     setHidden(els.desktopLogin, auth);
     setHidden(els.itemLogin, auth);
     setHidden(els.itemRegister, auth);
     setHidden(els.itemPanel, !auth);
+    setHidden(els.itemAdmin, !admin);
     setHidden(els.itemLogout, !auth);
 
     if (els.menuTitle) {
