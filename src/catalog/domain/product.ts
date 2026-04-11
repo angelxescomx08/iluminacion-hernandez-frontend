@@ -10,7 +10,8 @@ export type CatalogProduct = {
     slug: string;
     description: string | null;
     content: string | null;
-    characteristics: Record<string, unknown> | null;
+    /** Texto libre según el API (no JSON). */
+    characteristics: string | null;
     stock: number | null;
     isActive: boolean;
     price: number;
@@ -36,7 +37,7 @@ export type CreateProductInput = {
     price: number;
     description?: string;
     content?: string;
-    characteristics?: Record<string, unknown>;
+    characteristics?: string;
     stock?: number;
     isActive?: boolean;
 };

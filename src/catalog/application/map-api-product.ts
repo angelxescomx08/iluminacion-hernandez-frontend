@@ -92,10 +92,14 @@ export function mapApiProductPayload(raw: unknown): CatalogProduct | null {
         null;
     const content = readString(pick(o, ["content"])) ?? null;
 
-    let characteristics: Record<string, unknown> | null = null;
+    let characteristics: string | null = null;
     const ch = pick<unknown>(o, ["characteristics", "attrs", "attributes"]);
-    if (ch && typeof ch === "object" && !Array.isArray(ch)) {
-        characteristics = ch as Record<string, unknown>;
+    if (typeof ch === "string") {
+        characteristics = ch;
+    } else if (ch && typeof ch === "object" && !Array.isArray(ch)) {
+        characteristics = JSON.stringify(ch);
+    } else if (ch != null && typeof ch !== "object") {
+        characteristics = String(ch);
     }
 
     const stock = readNumber(pick(o, ["stock"]));

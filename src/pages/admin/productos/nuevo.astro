@@ -34,17 +34,31 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
                 Nuevo producto
             </h1>
             <p class="text-sm text-neutral-500 mt-1">
+                Tras el alta se pueden subir imágenes con
                 <code class="text-xs bg-neutral-100 px-1 rounded"
-                    >POST /api/v1/products</code
+                    >POST .../products/:id/images</code
                 >
+                (o elige archivos aquí y se envían en secuencia).
             </p>
         </div>
 
         <div
-            id="admin-form-error"
-            class="alert alert-error text-sm hidden"
-            role="alert"
+            id="admin-form-warning"
+            class="alert alert-warning text-sm hidden"
+            role="status"
         >
+            <p
+                id="admin-form-warning-text"
+                class="font-inter whitespace-pre-line"
+            ></p>
+            <p class="mt-2 mb-0">
+                <a
+                    id="admin-form-warning-link"
+                    href="#"
+                    class="link link-hover font-semibold text-neutral-800"
+                    >Ir a la ficha del producto</a
+                >
+            </p>
         </div>
 
         <form
@@ -64,7 +78,14 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
                     required
                     class="input input-bordered w-full bg-neutral-50 border-neutral-200"
                     placeholder="Nombre del producto"
+                    aria-describedby="field-title-error"
                 />
+                <p
+                    id="field-title-error"
+                    class="label text-error text-xs py-0 min-h-[1.25rem] hidden"
+                    role="alert"
+                >
+                </p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -83,7 +104,14 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
                         min="0"
                         required
                         class="input input-bordered w-full bg-neutral-50 border-neutral-200"
+                        aria-describedby="field-price-error"
                     />
+                    <p
+                        id="field-price-error"
+                        class="label text-error text-xs py-0 min-h-[1.25rem] hidden"
+                        role="alert"
+                    >
+                    </p>
                 </div>
                 <div class="form-control w-full">
                     <label class="label pt-0 pb-1" for="field-stock">
@@ -99,7 +127,14 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
                         step="1"
                         min="0"
                         class="input input-bordered w-full bg-neutral-50 border-neutral-200"
+                        aria-describedby="field-stock-error"
                     />
+                    <p
+                        id="field-stock-error"
+                        class="label text-error text-xs py-0 min-h-[1.25rem] hidden"
+                        role="alert"
+                    >
+                    </p>
                 </div>
             </div>
 
@@ -139,16 +174,113 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
                 <label class="label pt-0 pb-1" for="field-characteristics">
                     <span
                         class="label-text text-[10px] font-bold uppercase tracking-widest text-neutral-400"
-                        >Características (JSON)</span
+                        >Características</span
                     >
                 </label>
                 <textarea
                     id="field-characteristics"
                     name="characteristics"
                     rows="4"
-                    class="textarea textarea-bordered w-full bg-neutral-50 border-neutral-200 text-xs font-mono"
-                    placeholder='{"potencia":"12W","color":"3000K"}'
+                    class="textarea textarea-bordered w-full bg-neutral-50 border-neutral-200 text-sm"
+                    placeholder="Ej. Potencia 12W, temperatura de color 3000K, IP44…"
+                    aria-describedby="field-characteristics-error"
                 ></textarea>
+                <p
+                    id="field-characteristics-error"
+                    class="label text-error text-xs py-0 min-h-[1.25rem] hidden"
+                    role="alert"
+                >
+                </p>
+            </div>
+
+            <div
+                id="staged-images-panel"
+                class="rounded-2xl border border-base-200 bg-base-100 p-4 md:p-6 shadow-sm space-y-4"
+            >
+                <div
+                    class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3"
+                >
+                    <div class="space-y-1">
+                        <p
+                            class="text-[10px] font-bold uppercase tracking-widest text-neutral-400"
+                        >
+                            Imágenes (opcional)
+                        </p>
+                        <p class="text-xs text-base-content/60 max-w-md">
+                            Hasta 8 archivos · máx. 5&nbsp;MB c/u · JPEG, PNG o WebP.
+                            El orden se respeta; la primera suele ser la principal en
+                            catálogo.
+                        </p>
+                    </div>
+                    <div
+                        id="staged-count-badge"
+                        class="badge badge-neutral badge-lg gap-1 font-mono text-xs shrink-0"
+                    >
+                        0 / 8
+                    </div>
+                </div>
+
+                <div
+                    id="staged-pick-hint"
+                    class="alert alert-info text-sm py-2 hidden whitespace-pre-line"
+                    role="status"
+                >
+                </div>
+
+                <p
+                    id="staged-files-error"
+                    class="text-error text-xs hidden whitespace-pre-line"
+                    role="alert"
+                >
+                </p>
+
+                <label
+                    id="nuevo-image-drop-zone"
+                    for="field-images"
+                    class="block cursor-pointer rounded-box border-2 border-dashed border-base-300 bg-base-200/25 px-4 py-10 text-center transition-all hover:border-amber-500/55 hover:bg-amber-500/5 focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-500/25 outline-none"
+                >
+                    <input
+                        id="field-images"
+                        name="images"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                        class="hidden"
+                    />
+                    <span
+                        class="font-montserrat font-semibold text-sm text-neutral-800"
+                    >
+                        Arrastra imágenes aquí
+                    </span>
+                    <span
+                        class="block text-xs text-base-content/60 mt-2"
+                    >
+                        o pulsa para elegir archivos de tu equipo
+                    </span>
+                </label>
+
+                <p
+                    id="staged-empty-hint"
+                    class="text-center text-sm text-base-content/50 py-1"
+                >
+                    Sin imágenes en cola. Puedes crear el producto y añadirlas después.
+                </p>
+
+                <div
+                    id="staged-images-grid"
+                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 hidden"
+                >
+                </div>
+
+                <div class="flex justify-end">
+                    <button
+                        type="button"
+                        id="btn-clear-staged"
+                        class="btn btn-ghost btn-sm rounded-xl hidden"
+                    >
+                        Quitar todas
+                    </button>
+                </div>
             </div>
 
             <label
@@ -165,6 +297,13 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
                     >Producto activo en catálogo</span
                 >
             </label>
+
+            <p
+                id="field-form-error"
+                class="text-error text-sm hidden whitespace-pre-line"
+                role="alert"
+            >
+            </p>
 
             <div class="flex flex-col sm:flex-row gap-3 pt-2">
                 <button
@@ -186,38 +325,206 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
 </AdminLayout>
 
 <script>
+    import { createProductWithImages } from "../../../catalog/application/create-product-with-images.use-case";
+    import {
+        setHelperLineError,
+        setInlineFieldError,
+    } from "../../../catalog/client/admin-inline-field-error";
     import { bootAdminCatalogPage } from "../../../catalog/client/boot-admin-catalog-page";
+    import { classifyFilesForStaging } from "../../../catalog/client/stage-local-product-images";
+    import type { CatalogResult } from "../../../catalog/domain/catalog-result";
+    import type { CreateProductWithImagesData } from "../../../catalog/application/create-product-with-images.use-case";
+    import { PRODUCT_IMAGES_MAX_COUNT } from "../../../catalog/domain/product-image-upload";
     import type { ProductsGatewayPort } from "../../../catalog/ports/products-gateway.port";
 
     const envAlert = document.getElementById("admin-env-alert");
     const loading = document.getElementById("admin-loading");
     const shell = document.getElementById("admin-shell");
-    const errBox = document.getElementById("admin-form-error");
+    const warnBox = document.getElementById("admin-form-warning");
+    const warnText = document.getElementById("admin-form-warning-text");
+    const warnLink = document.getElementById("admin-form-warning-link");
     const form = document.getElementById("product-create-form");
     const submitBtn = document.getElementById("btn-submit");
+    const imagesInput = document.getElementById("field-images");
+    const stagedPanel = document.getElementById("staged-images-panel");
+    const dropZone = document.getElementById("nuevo-image-drop-zone");
+    const stagedGrid = document.getElementById("staged-images-grid");
+    const stagedEmpty = document.getElementById("staged-empty-hint");
+    const stagedBadge = document.getElementById("staged-count-badge");
+    const btnClearStaged = document.getElementById("btn-clear-staged");
+    const stagedPickHint = document.getElementById("staged-pick-hint");
 
-    function showError(message: string) {
-        if (!errBox) {
+    type StagedEntry = { file: File; url: string };
+    const staged: StagedEntry[] = [];
+
+    function clearInlineAndFooterErrors() {
+        for (const id of [
+            "field-title",
+            "field-price",
+            "field-stock",
+            "field-characteristics",
+        ] as const) {
+            setInlineFieldError(id, null);
+        }
+        setHelperLineError("field-form-error", null);
+        setHelperLineError("staged-files-error", null);
+    }
+
+    function showFormFooterError(message: string) {
+        warnBox?.classList.add("hidden");
+        hideStagedPickHint();
+        setHelperLineError("staged-files-error", null);
+        setHelperLineError("field-form-error", message);
+    }
+
+    function showStagedFilesOnlyError(message: string) {
+        hideStagedPickHint();
+        setHelperLineError("field-form-error", null);
+        setHelperLineError("staged-files-error", message);
+    }
+
+    function showWarning(message: string, editHref: string) {
+        clearInlineAndFooterErrors();
+        hideStagedPickHint();
+        if (warnText) {
+            warnText.textContent = message;
+        }
+        if (warnLink instanceof HTMLAnchorElement) {
+            warnLink.href = editHref;
+        }
+        warnBox?.classList.remove("hidden");
+    }
+
+    function hideWarning() {
+        warnBox?.classList.add("hidden");
+    }
+
+    function hideStagedPickHint() {
+        stagedPickHint?.classList.add("hidden");
+    }
+
+    function showStagedPickHint(message: string) {
+        if (!stagedPickHint) {
             return;
         }
-        errBox.textContent = message;
-        errBox.classList.remove("hidden");
+        stagedPickHint.textContent = message;
+        stagedPickHint.classList.remove("hidden");
     }
 
-    function hideError() {
-        errBox?.classList.add("hidden");
+    function disposeStagedUrls() {
+        for (const e of staged) {
+            URL.revokeObjectURL(e.url);
+        }
     }
 
-    function parseCharacteristics(raw: string): Record<string, unknown> | undefined {
-        const t = raw.trim();
-        if (!t) {
-            return undefined;
+    function updateStagedBadge() {
+        if (stagedBadge) {
+            stagedBadge.textContent = `${staged.length} / ${PRODUCT_IMAGES_MAX_COUNT}`;
         }
-        const parsed = JSON.parse(t) as unknown;
-        if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-            throw new Error("Las características deben ser un objeto JSON.");
+    }
+
+    function setStagedUiBusy(busy: boolean) {
+        if (stagedPanel) {
+            stagedPanel.classList.toggle("opacity-60", busy);
+            stagedPanel.classList.toggle("pointer-events-none", busy);
         }
-        return parsed as Record<string, unknown>;
+    }
+
+    function renderStagedGrid() {
+        updateStagedBadge();
+        if (!stagedGrid || !stagedEmpty || !btnClearStaged) {
+            return;
+        }
+        if (staged.length === 0) {
+            stagedGrid.classList.add("hidden");
+            stagedGrid.replaceChildren();
+            stagedEmpty.classList.remove("hidden");
+            btnClearStaged.classList.add("hidden");
+            return;
+        }
+        stagedEmpty.classList.add("hidden");
+        stagedGrid.classList.remove("hidden");
+        btnClearStaged.classList.remove("hidden");
+        stagedGrid.replaceChildren();
+        staged.forEach((entry, index) => {
+            const card = document.createElement("article");
+            card.className =
+                "card card-compact bg-base-100 border border-base-200 shadow-sm overflow-hidden group";
+            const figure = document.createElement("figure");
+            figure.className =
+                "relative aspect-square bg-base-300";
+            const img = document.createElement("img");
+            img.src = entry.url;
+            img.alt = "";
+            img.className = "h-full w-full object-cover";
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className =
+                "btn btn-circle btn-xs btn-neutral text-base-100 absolute top-2 right-2 shadow-md opacity-90 hover:opacity-100";
+            removeBtn.setAttribute("aria-label", "Quitar de la cola");
+            removeBtn.textContent = "✕";
+            removeBtn.addEventListener("click", (ev) => {
+                ev.preventDefault();
+                removeStagedAt(index);
+            });
+            figure.append(img, removeBtn);
+            const body = document.createElement("div");
+            body.className = "card-body p-2.5 gap-1";
+            const nameEl = document.createElement("p");
+            nameEl.className =
+                "text-[11px] text-neutral-600 truncate font-inter";
+            nameEl.textContent = entry.file.name;
+            nameEl.title = entry.file.name;
+            body.append(nameEl);
+            card.append(figure, body);
+            stagedGrid.appendChild(card);
+        });
+    }
+
+    function removeStagedAt(index: number) {
+        const entry = staged[index];
+        if (!entry) {
+            return;
+        }
+        URL.revokeObjectURL(entry.url);
+        staged.splice(index, 1);
+        renderStagedGrid();
+    }
+
+    function tryAddPickedFiles(files: File[]) {
+        if (files.length === 0) {
+            return;
+        }
+        const classified = classifyFilesForStaging(staged.length, files);
+        const rejected = classified.filter((c) => !c.ok);
+        const accepted = classified.filter(
+            (c): c is { ok: true; file: File } => c.ok,
+        );
+        for (const c of accepted) {
+            staged.push({ file: c.file, url: URL.createObjectURL(c.file) });
+        }
+        if (rejected.length > 0) {
+            const msg = rejected.map((r) => `${r.name}: ${r.reason}`).join("\n");
+            if (accepted.length > 0) {
+                setHelperLineError("staged-files-error", null);
+                showStagedPickHint(msg);
+            } else {
+                hideStagedPickHint();
+                showStagedFilesOnlyError(msg);
+            }
+        } else {
+            setHelperLineError("staged-files-error", null);
+            hideStagedPickHint();
+        }
+        renderStagedGrid();
+    }
+
+    function clearAllStaged() {
+        disposeStagedUrls();
+        staged.length = 0;
+        setHelperLineError("staged-files-error", null);
+        hideStagedPickHint();
+        renderStagedGrid();
     }
 
     let catalogGateway!: ProductsGatewayPort;
@@ -236,9 +543,53 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
         loading?.classList.add("hidden");
         shell?.classList.remove("hidden");
 
+        renderStagedGrid();
+
+        imagesInput?.addEventListener("change", () => {
+            if (!(imagesInput instanceof HTMLInputElement) || !imagesInput.files?.length) {
+                return;
+            }
+            tryAddPickedFiles(Array.from(imagesInput.files));
+            imagesInput.value = "";
+        });
+
+        dropZone?.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZone.classList.add("border-amber-500", "bg-amber-500/10");
+        });
+        dropZone?.addEventListener("dragleave", () => {
+            dropZone.classList.remove("border-amber-500", "bg-amber-500/10");
+        });
+        dropZone?.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropZone.classList.remove("border-amber-500", "bg-amber-500/10");
+            const dt = e.dataTransfer;
+            if (!dt?.files?.length) {
+                return;
+            }
+            tryAddPickedFiles(Array.from(dt.files));
+        });
+
+        btnClearStaged?.addEventListener("click", () => {
+            clearAllStaged();
+        });
+
+        for (const fieldId of [
+            "field-title",
+            "field-price",
+            "field-stock",
+            "field-characteristics",
+        ] as const) {
+            document.getElementById(fieldId)?.addEventListener("input", () => {
+                setInlineFieldError(fieldId, null);
+            });
+        }
+
         form?.addEventListener("submit", async (e) => {
             e.preventDefault();
-            hideError();
+            clearInlineAndFooterErrors();
+            hideWarning();
+            hideStagedPickHint();
             const titleEl = document.getElementById("field-title");
             const priceEl = document.getElementById("field-price");
             const stockEl = document.getElementById("field-stock");
@@ -252,65 +603,103 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
             ) {
                 return;
             }
-            const price = Number(priceEl.value);
-            if (!Number.isFinite(price)) {
-                showError("Introduce un precio numérico válido.");
+            const titleTrim = titleEl.value.trim();
+            if (!titleTrim) {
+                setInlineFieldError(
+                    "field-title",
+                    "Escribe un título para el producto.",
+                );
                 return;
             }
-            let characteristics: Record<string, unknown> | undefined;
-            if (charEl instanceof HTMLTextAreaElement && charEl.value.trim()) {
-                try {
-                    characteristics = parseCharacteristics(charEl.value);
-                } catch (err) {
-                    showError(
-                        err instanceof Error
-                            ? err.message
-                            : "JSON de características inválido.",
-                    );
-                    return;
-                }
+            const price = Number(priceEl.value);
+            if (!Number.isFinite(price)) {
+                setInlineFieldError(
+                    "field-price",
+                    "Introduce un precio numérico válido.",
+                );
+                return;
             }
+            const characteristicsText =
+                charEl instanceof HTMLTextAreaElement
+                    ? charEl.value.trim()
+                    : "";
+            const characteristics =
+                characteristicsText === "" ? undefined : characteristicsText;
             const stockRaw =
                 stockEl instanceof HTMLInputElement ? stockEl.value.trim() : "";
             const stock =
                 stockRaw === "" ? undefined : Number(stockRaw);
             if (stock !== undefined && !Number.isFinite(stock)) {
-                showError("Stock inválido.");
+                setInlineFieldError("field-stock", "Stock inválido.");
                 return;
             }
+            const imageFiles = staged.map((s) => s.file);
+
             if (submitBtn instanceof HTMLButtonElement) {
                 submitBtn.disabled = true;
                 submitBtn.classList.add("btn-loading");
             }
-            const result = await catalogGateway.create({
-                title: titleEl.value.trim(),
-                price,
-                ...(descEl instanceof HTMLTextAreaElement &&
-                descEl.value.trim()
-                    ? { description: descEl.value.trim() }
-                    : {}),
-                ...(contentEl instanceof HTMLTextAreaElement &&
-                contentEl.value.trim()
-                    ? { content: contentEl.value.trim() }
-                    : {}),
-                ...(characteristics ? { characteristics } : {}),
-                ...(stock !== undefined ? { stock } : {}),
-                isActive:
-                    activeEl instanceof HTMLInputElement
-                        ? activeEl.checked
-                        : true,
-            });
-            if (submitBtn instanceof HTMLButtonElement) {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove("btn-loading");
+            setStagedUiBusy(true);
+            if (imagesInput instanceof HTMLInputElement) {
+                imagesInput.disabled = true;
+            }
+            let result: CatalogResult<CreateProductWithImagesData>;
+            try {
+                result = await createProductWithImages(
+                    catalogGateway,
+                    {
+                        title: titleTrim,
+                        price,
+                        ...(descEl instanceof HTMLTextAreaElement &&
+                        descEl.value.trim()
+                            ? { description: descEl.value.trim() }
+                            : {}),
+                        ...(contentEl instanceof HTMLTextAreaElement &&
+                        contentEl.value.trim()
+                            ? { content: contentEl.value.trim() }
+                            : {}),
+                        ...(characteristics ? { characteristics } : {}),
+                        ...(stock !== undefined ? { stock } : {}),
+                        isActive:
+                            activeEl instanceof HTMLInputElement
+                                ? activeEl.checked
+                                : true,
+                    },
+                    imageFiles,
+                );
+            } catch (err) {
+                showFormFooterError(
+                    err instanceof Error
+                        ? err.message
+                        : "No se pudo completar la operación.",
+                );
+                return;
+            } finally {
+                if (submitBtn instanceof HTMLButtonElement) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove("btn-loading");
+                }
+                setStagedUiBusy(false);
+                if (imagesInput instanceof HTMLInputElement) {
+                    imagesInput.disabled = false;
+                }
             }
             if (!result.ok) {
-                showError(result.message);
+                showFormFooterError(result.message);
                 return;
             }
-            window.location.assign(
-                `/admin/productos/editar?id=${encodeURIComponent(result.data.id)}`,
-            );
+            const editHref = `/admin/productos/editar?id=${encodeURIComponent(result.data.product.id)}`;
+            if (result.data.failedUploads.length > 0) {
+                const lines = result.data.failedUploads.map(
+                    (f) => `• ${f.name}: ${f.message}`,
+                );
+                showWarning(
+                    `El producto se creó, pero no se subieron todas las imágenes.\n${lines.join("\n")}`,
+                    editHref,
+                );
+                return;
+            }
+            window.location.assign(editHref);
         });
     }
 
