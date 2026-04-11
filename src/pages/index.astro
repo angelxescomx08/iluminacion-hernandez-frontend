@@ -4,13 +4,32 @@ import Products from "../components/Products.astro";
 import MainSlider from "../components/sliders/MainSlider.astro";
 import Layout from "../layouts/Layout.astro";
 import LookbookSection from "../components/LookbookSection.astro";
+import { createHttpProductsGateway } from "../catalog/adapters/http-products-gateway";
+import { loadPublicProductList } from "../catalog/application/load-public-product-list.use-case";
+import type { CatalogProduct } from "../catalog/domain/product";
+
+const FEATURED_PRODUCT_COUNT = 3;
+const apiBase = import.meta.env.PUBLIC_API_URL?.trim();
+
+let featuredProducts: CatalogProduct[] = [];
+if (apiBase) {
+    const gateway = createHttpProductsGateway(apiBase);
+    const result = await loadPublicProductList(gateway, {
+        page: 1,
+        pageSize: FEATURED_PRODUCT_COUNT,
+        activeOnly: true,
+    });
+    if (result.ok) {
+        featuredProducts = result.data.items;
+    }
+}
 ---
 
 <Layout title="Iluminación Hernández | Catálogo Prime">
   <main class="overflow-hidden bg-white">
     <MainSlider />
     <LightExperience />
-    <Products />
+    <Products products={featuredProducts} />
     <LookbookSection />
   </main>
 </Layout>

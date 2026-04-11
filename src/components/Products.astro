@@ -1,35 +1,19 @@
 ---
-import { Picture } from "astro:assets";
-// Import de prueba solicitado (en producción usarías las fotos reales de cada producto)
-import imgPlaceholder from "../assets/images/light-experience/calida.webp";
+import { pickMainProductImageUrl } from "../catalog/application/pick-main-product-image-url";
+import type { CatalogProduct } from "../catalog/domain/product";
 
-// Datos de prueba (Mock Data) para simular productos
-const featuredProducts = [
-  {
-    id: 1,
-    name: "Lámpara Colgante Aura",
-    category: "Techo / Minimalista",
-    price: "$4,200",
-    image: imgPlaceholder,
-    badge: "Nuevo",
-  },
-  {
-    id: 2,
-    name: "Arbotante Industrial T-40",
-    category: "Pared / Industrial",
-    price: "$2,850",
-    image: imgPlaceholder,
-    badge: null,
-  },
-  {
-    id: 3,
-    name: "Lámpara de Pie Arco",
-    category: "Piso / Moderno",
-    price: "$5,400",
-    image: imgPlaceholder,
-    badge: "Best Seller",
-  },
-];
+interface Props {
+    products: CatalogProduct[];
+}
+
+const { products } = Astro.props;
+
+function formatPriceMx(value: number): string {
+    return value.toLocaleString("es-MX", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+}
 ---
 
 <section class="py-20 md:py-28 bg-white">
@@ -57,51 +41,55 @@ const featuredProducts = [
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14"
     >
       {
-        featuredProducts.map((product) => (
-          <a href={`/producto/${product.id}`} class="group block">
-            <div class="relative aspect-3/4 rounded-3xl overflow-hidden bg-neutral-100 mb-6 shadow-sm transition-shadow duration-500 group-hover:shadow-xl">
-              {product.badge && (
-                <div class="absolute top-4 left-4 z-20">
-                  <span class="inline-block bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-neutral-900 shadow-sm">
-                    {product.badge}
+        products.map((product) => {
+          const href = `/producto/${encodeURIComponent(product.slug)}`;
+          const imgUrl = pickMainProductImageUrl(product);
+          const subtitle = product.characteristics?.trim();
+          const priceLabel = `$${formatPriceMx(product.price)}`;
+
+          return (
+            <a href={href} class="group block">
+              <div class="relative aspect-3/4 rounded-3xl overflow-hidden bg-neutral-100 mb-6 shadow-sm transition-shadow duration-500 group-hover:shadow-xl">
+                <div class="w-full h-full transition-transform duration-700 ease-in-out group-hover:scale-105">
+                  {imgUrl ? (
+                    <img
+                      src={imgUrl}
+                      alt={product.title}
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div class="flex h-full w-full items-center justify-center bg-neutral-200 text-neutral-500 text-xs font-bold uppercase tracking-widest">
+                      Sin imagen
+                    </div>
+                  )}
+                </div>
+
+                <div class="absolute inset-0 bg-neutral-900/0 transition-colors duration-300 group-hover:bg-neutral-900/10 z-10" />
+                <div class="absolute bottom-0 left-0 w-full p-4 translate-y-full transition-transform duration-500 ease-in-out group-hover:translate-y-0 z-20">
+                  <span class="flex w-full items-center justify-center bg-white/95 backdrop-blur-md text-neutral-900 py-3 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg group-hover:bg-amber-500 group-hover:text-white transition-colors pointer-events-none">
+                    Ver Detalles
                   </span>
                 </div>
-              )}
-
-              <div class="w-full h-full transition-transform duration-700 ease-in-out group-hover:scale-105">
-                <Picture
-                  src={product.image}
-                  alt={product.name}
-                  formats={["avif", "webp"]}
-                  widths={[400, 600, 800]}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  class="w-full h-full object-cover"
-                  loading="lazy"
-                  inferSize={true}
-                />
               </div>
 
-              <div class="absolute inset-0 bg-neutral-900/0 transition-colors duration-300 group-hover:bg-neutral-900/10 z-10" />
-              <div class="absolute bottom-0 left-0 w-full p-4 translate-y-full transition-transform duration-500 ease-in-out group-hover:translate-y-0 z-20">
-                <button class="w-full bg-white/95 backdrop-blur-md text-neutral-900 py-3 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg hover:bg-amber-500 hover:text-white transition-colors">
-                  Ver Detalles
-                </button>
+              <div class="text-center space-y-1">
+                {subtitle ? (
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-bold line-clamp-2">
+                    {subtitle}
+                  </p>
+                ) : null}
+                <h4 class="font-montserrat font-bold text-lg text-neutral-900 group-hover:text-amber-600 transition-colors">
+                  {product.title}
+                </h4>
+                <p class="font-inter font-medium text-neutral-700 pt-1">
+                  {priceLabel}
+                </p>
               </div>
-            </div>
-
-            <div class="text-center space-y-1">
-              <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-bold">
-                {product.category}
-              </p>
-              <h4 class="font-montserrat font-bold text-lg text-neutral-900 group-hover:text-amber-600 transition-colors">
-                {product.name}
-              </h4>
-              <p class="font-inter font-medium text-neutral-700 pt-1">
-                {product.price}
-              </p>
-            </div>
-          </a>
-        ))
+            </a>
+          );
+        })
       }
     </div>
 
