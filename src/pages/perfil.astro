@@ -1,0 +1,208 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Mi perfil | Iluminación Hernández">
+    <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-12 px-6">
+        <div class="max-w-lg mx-auto space-y-8">
+            <div class="border-l-4 border-amber-500 pl-6">
+                <h1
+                    class="text-2xl md:text-4xl font-montserrat font-black text-neutral-800 tracking-tight uppercase"
+                >
+                    Mi perfil
+                </h1>
+                <p class="text-neutral-500 mt-2 font-inter text-sm">
+                    Datos de tu cuenta en Iluminación Hernández
+                </p>
+            </div>
+
+            <div
+                id="perfil-env-alert"
+                class="alert alert-warning text-sm hidden"
+                role="alert"
+            >
+                Configura <code class="text-xs">PUBLIC_API_URL</code> para ver tu
+                perfil.
+            </div>
+
+            <div
+                id="perfil-loading"
+                class="flex flex-col items-center py-16 gap-4"
+            >
+                <span class="loading loading-spinner loading-lg text-amber-600"
+                ></span>
+                <p class="text-sm text-neutral-500 font-inter">
+                    Cargando sesión…
+                </p>
+            </div>
+
+            <div id="perfil-shell" class="hidden space-y-6">
+                <div
+                    class="bg-white border border-neutral-100 rounded-3xl p-8 shadow-[0_10px_30px_rgba(0,0,0,0.03)]"
+                >
+                    <div class="flex items-center gap-4">
+                        <span
+                            class="relative block w-16 h-16 rounded-full overflow-hidden bg-neutral-100 ring-2 ring-neutral-100 shrink-0"
+                        >
+                            <img
+                                id="perfil-avatar-img"
+                                class="absolute inset-0 h-full w-full object-cover hidden"
+                                alt=""
+                                width="64"
+                                height="64"
+                                decoding="async"
+                            />
+                            <span
+                                id="perfil-avatar-fallback"
+                                class="absolute inset-0 flex items-center justify-center bg-neutral-200 text-lg font-bold text-neutral-600"
+                            >
+                                <span id="perfil-avatar-initials">?</span>
+                            </span>
+                        </span>
+                        <div class="min-w-0">
+                            <p
+                                id="perfil-name"
+                                class="font-montserrat font-bold text-lg text-neutral-900 truncate"
+                            >
+                            </p>
+                            <p
+                                id="perfil-email"
+                                class="text-sm text-neutral-500 font-inter truncate"
+                            >
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    id="perfil-admin-card"
+                    class="hidden bg-white border border-amber-100 rounded-3xl p-8 shadow-sm space-y-4"
+                >
+                    <p
+                        class="text-[10px] uppercase tracking-[0.35em] text-amber-600 font-bold"
+                    >
+                        Administración
+                    </p>
+                    <h2 class="font-montserrat font-bold text-neutral-900">
+                        Catálogo de productos
+                    </h2>
+                    <p class="text-sm text-neutral-500 font-inter">
+                        Gestiona el inventario y crea nuevas fichas. Requiere
+                        rol <code class="text-xs bg-neutral-100 px-1 rounded"
+                            >admin</code
+                        > en el API.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                        <a
+                            href="/admin/productos"
+                            class="btn btn-neutral rounded-xl text-white font-montserrat font-bold tracking-widest text-[11px] h-12 flex-1 hover:bg-amber-600"
+                        >
+                            Ver catálogo
+                        </a>
+                        <a
+                            href="/admin/productos/nuevo"
+                            class="btn btn-outline border-neutral-200 rounded-xl font-inter font-semibold h-12 flex-1"
+                        >
+                            Crear producto
+                        </a>
+                    </div>
+                </div>
+
+                <p class="text-center">
+                    <a
+                        href="/cerrar-sesion"
+                        class="link link-error text-sm font-inter font-medium"
+                        >Cerrar sesión</a
+                    >
+                </p>
+            </div>
+        </div>
+    </main>
+</Layout>
+
+<script>
+    import { tryCreateBrowserAuthGateway } from "../auth/client/create-browser-auth-gateway";
+    import { loadClientSession } from "../auth/application/load-client-session.use-case";
+    import {
+        isAdminClientSession,
+        isAuthenticatedSession,
+    } from "../auth/domain/client-session";
+    import { initialsFromDisplayName, initialsFromEmail } from "../auth/client/avatar-placeholder";
+
+    const envAlert = document.getElementById("perfil-env-alert");
+    const loading = document.getElementById("perfil-loading");
+    const shell = document.getElementById("perfil-shell");
+    const adminCard = document.getElementById("perfil-admin-card");
+    const nameEl = document.getElementById("perfil-name");
+    const emailEl = document.getElementById("perfil-email");
+    const avatarImg = document.getElementById("perfil-avatar-img");
+    const avatarFallback = document.getElementById("perfil-avatar-fallback");
+    const avatarInitials = document.getElementById("perfil-avatar-initials");
+
+    async function init() {
+        const gateway = tryCreateBrowserAuthGateway();
+        if (!gateway) {
+            envAlert?.classList.remove("hidden");
+            loading?.classList.add("hidden");
+            return;
+        }
+
+        const session = await loadClientSession(gateway);
+        loading?.classList.add("hidden");
+
+        if (!isAuthenticatedSession(session)) {
+            window.location.assign(
+                `/login?redirect=${encodeURIComponent("/perfil")}`,
+            );
+            return;
+        }
+
+        shell?.classList.remove("hidden");
+
+        const { displayName, email, imageUrl } = session.user;
+        if (nameEl) {
+            nameEl.textContent = displayName;
+        }
+        if (emailEl) {
+            emailEl.textContent = email ?? "Sin correo en la sesión";
+        }
+
+        const fromName = initialsFromDisplayName(displayName);
+        const initials =
+            fromName !== "?"
+                ? fromName
+                : email
+                  ? initialsFromEmail(email)
+                  : "?";
+        if (avatarInitials) {
+            avatarInitials.textContent = initials;
+        }
+
+        if (
+            imageUrl &&
+            avatarImg instanceof HTMLImageElement &&
+            avatarFallback instanceof HTMLElement
+        ) {
+            avatarImg.onload = () => {
+                avatarImg.classList.remove("hidden");
+                avatarFallback.classList.add("hidden");
+            };
+            avatarImg.onerror = () => {
+                avatarImg.classList.add("hidden");
+                avatarFallback.classList.remove("hidden");
+            };
+            avatarImg.alt = `Avatar de ${displayName}`;
+            avatarImg.src = imageUrl;
+            if (avatarImg.complete && avatarImg.naturalWidth > 0) {
+                avatarImg.classList.remove("hidden");
+                avatarFallback.classList.add("hidden");
+            }
+        }
+
+        if (isAdminClientSession(session)) {
+            adminCard?.classList.remove("hidden");
+        }
+    }
+
+    void init();
+</script>

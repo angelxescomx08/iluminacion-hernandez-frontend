@@ -1,20 +1,8 @@
 ---
-import AdminLayout from "../../../../layouts/AdminLayout.astro";
-
-const productId = Astro.params.id;
-if (!productId) {
-    return Astro.redirect("/admin/productos");
-}
+import AdminLayout from "../../../layouts/AdminLayout.astro";
 ---
 
 <AdminLayout title="Editar producto — Administración">
-    <div
-        id="admin-edit-config"
-        class="hidden"
-        data-product-id={productId}
-        aria-hidden="true"
-    >
-    </div>
     <div
         id="admin-env-alert"
         class="alert alert-warning mb-6 hidden"
@@ -65,7 +53,7 @@ if (!productId) {
             id="product-edit-form"
             class="bg-white border border-neutral-100 rounded-2xl p-6 md:p-8 shadow-sm space-y-5"
         >
-            <input type="hidden" id="field-id" value={productId} />
+            <input type="hidden" id="field-id" value="" />
 
             <div class="form-control w-full">
                 <label class="label pt-0 pb-1" for="field-title">
@@ -241,15 +229,12 @@ if (!productId) {
 </AdminLayout>
 
 <script>
-    import { bootAdminCatalogPage } from "../../../../catalog/client/boot-admin-catalog-page";
-    import type { CatalogProduct } from "../../../../catalog/domain/product";
-    import type { ProductsGatewayPort } from "../../../../catalog/ports/products-gateway.port";
+    import { bootAdminCatalogPage } from "../../../catalog/client/boot-admin-catalog-page";
+    import type { CatalogProduct } from "../../../catalog/domain/product";
+    import type { ProductsGatewayPort } from "../../../catalog/ports/products-gateway.port";
 
-    const configEl = document.getElementById("admin-edit-config");
     const productId =
-        configEl instanceof HTMLElement && configEl.dataset.productId
-            ? configEl.dataset.productId
-            : "";
+        new URLSearchParams(window.location.search).get("id")?.trim() ?? "";
 
     const envAlert = document.getElementById("admin-env-alert");
     const loading = document.getElementById("admin-loading");
@@ -260,6 +245,7 @@ if (!productId) {
     const archiveBtn = document.getElementById("btn-archive");
     const imagesList = document.getElementById("images-list");
     const imageFile = document.getElementById("image-file");
+    const fieldId = document.getElementById("field-id");
 
     function showError(message: string) {
         if (!errBox) {
@@ -296,6 +282,9 @@ if (!productId) {
         const contentEl = document.getElementById("field-content");
         const charEl = document.getElementById("field-characteristics");
         const activeEl = document.getElementById("field-active");
+        if (fieldId instanceof HTMLInputElement) {
+            fieldId.value = p.id;
+        }
         if (titleEl instanceof HTMLInputElement) {
             titleEl.value = p.title;
         }

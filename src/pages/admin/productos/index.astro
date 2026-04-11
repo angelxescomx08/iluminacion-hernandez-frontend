@@ -217,7 +217,7 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
         <td class="text-right text-sm">${p.stock ?? "—"}</td>
         <td>${p.isActive ? '<span class="badge badge-success badge-sm">Activo</span>' : '<span class="badge badge-ghost badge-sm">Inactivo</span>'}</td>
         <td class="text-right space-x-1 whitespace-nowrap">
-          <a class="btn btn-ghost btn-xs rounded-lg" href="/admin/productos/${encodeURIComponent(p.id)}/editar">Editar</a>
+          <a class="btn btn-ghost btn-xs rounded-lg" href="/admin/productos/editar?id=${encodeURIComponent(p.id)}">Editar</a>
           <button type="button" class="btn btn-ghost btn-xs text-error rounded-lg" data-archive="${encodeURIComponent(p.id)}">Archivar</button>
         </td>`;
             tbody.appendChild(tr);

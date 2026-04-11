@@ -16,7 +16,7 @@ type SessionElements = {
     itemLogin: HTMLElement | null;
     itemRegister: HTMLElement | null;
     itemPanel: HTMLElement | null;
-    itemAdmin: HTMLElement | null;
+    adminItems: HTMLElement[];
     itemLogout: HTMLElement | null;
     desktopLogin: HTMLElement | null;
 };
@@ -33,7 +33,9 @@ function queryGroup(root: ParentNode): SessionElements {
         itemLogin: root.querySelector("[data-session-item-login]"),
         itemRegister: root.querySelector("[data-session-item-register]"),
         itemPanel: root.querySelector("[data-session-item-panel]"),
-        itemAdmin: root.querySelector("[data-session-item-admin]"),
+        adminItems: Array.from(
+            root.querySelectorAll<HTMLElement>("[data-session-item-admin]"),
+        ),
         itemLogout: root.querySelector("[data-session-item-logout]"),
         desktopLogin: root.querySelector("[data-session-desktop-login]"),
     };
@@ -142,7 +144,9 @@ function applyNavGroup(els: SessionElements, session: ClientSession) {
     setHidden(els.itemLogin, auth);
     setHidden(els.itemRegister, auth);
     setHidden(els.itemPanel, !auth);
-    setHidden(els.itemAdmin, !admin);
+    for (const el of els.adminItems) {
+        setHidden(el, !admin);
+    }
     setHidden(els.itemLogout, !auth);
 
     if (els.menuTitle) {

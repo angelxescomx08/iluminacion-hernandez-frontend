@@ -309,7 +309,7 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
                 return;
             }
             window.location.assign(
-                `/admin/productos/${encodeURIComponent(result.data.id)}/editar`,
+                `/admin/productos/editar?id=${encodeURIComponent(result.data.id)}`,
             );
         });
     }
