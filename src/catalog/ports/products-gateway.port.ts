@@ -19,6 +19,7 @@ export type ListProductsParams = {
 export interface ProductsGatewayPort {
     list(params: ListProductsParams): Promise<CatalogResult<ProductListPage>>;
     getById(id: string): Promise<CatalogResult<CatalogProduct>>;
+    getBySlug(slug: string): Promise<CatalogResult<CatalogProduct>>;
     create(
         input: CreateProductInput,
     ): Promise<CatalogResult<CatalogProduct>>;

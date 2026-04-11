@@ -1,0 +1,378 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Tienda | Iluminación Hernández">
+    <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-10 md:py-14 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto">
+            <div
+                id="shop-env-alert"
+                class="alert alert-warning mb-8 hidden"
+                role="alert"
+            >
+                Configura <code class="text-xs">PUBLIC_API_URL</code> para cargar
+                el catálogo desde <code class="text-xs">GET /api/v1/products</code
+                >.
+            </div>
+
+            <header class="mb-10 md:mb-12 border-l-4 border-amber-500 pl-5 md:pl-6">
+                <p
+                    class="text-[10px] uppercase tracking-[0.35em] text-amber-600 font-bold mb-2"
+                >
+                    Catálogo
+                </p>
+                <h1
+                    class="text-3xl md:text-5xl font-montserrat font-black text-neutral-800 tracking-tight uppercase"
+                >
+                    Tienda
+                </h1>
+                <p
+                    class="text-neutral-500 mt-2 font-inter text-sm md:text-base max-w-2xl"
+                >
+                    Productos activos con paginación y búsqueda (título, descripción
+                    y características según el API).
+                </p>
+            </header>
+
+            <div
+                id="shop-loading"
+                class="flex flex-col items-center justify-center py-24 gap-4"
+            >
+                <span
+                    class="loading loading-spinner loading-lg text-amber-600"
+                ></span>
+                <p class="text-sm text-neutral-500 font-inter">
+                    Cargando productos…
+                </p>
+            </div>
+
+            <div id="shop-shell" class="hidden space-y-10">
+                <div
+                    class="bg-white border border-neutral-100 rounded-2xl p-5 md:p-6 shadow-sm"
+                >
+                    <form
+                        id="shop-filter-form"
+                        class="flex flex-col sm:flex-row sm:items-end gap-4"
+                    >
+                        <div class="form-control flex-1 w-full">
+                            <label class="label pt-0 pb-1" for="shop-q">
+                                <span
+                                    class="label-text text-[10px] font-bold uppercase tracking-widest text-neutral-400"
+                                    >Buscar</span
+                                >
+                            </label>
+                            <input
+                                id="shop-q"
+                                name="q"
+                                type="search"
+                                class="input input-bordered w-full bg-neutral-50 border-neutral-200"
+                                placeholder="Nombre, descripción o características"
+                                autocomplete="off"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            class="btn btn-neutral rounded-xl text-white font-montserrat font-bold tracking-widest text-[11px] h-12 px-6 hover:bg-amber-600 shrink-0"
+                        >
+                            Buscar
+                        </button>
+                    </form>
+                </div>
+
+                <div
+                    id="shop-list-error"
+                    class="alert alert-error text-sm hidden"
+                    role="alert"
+                >
+                </div>
+
+                <div
+                    id="shop-empty"
+                    class="hidden text-center py-16 px-4 rounded-2xl border border-dashed border-neutral-200 bg-white"
+                >
+                    <p class="font-montserrat font-bold text-neutral-800">
+                        No hay productos que coincidan
+                    </p>
+                    <p class="text-sm text-neutral-500 mt-2 font-inter">
+                        Prueba con otros términos o vuelve más tarde.
+                    </p>
+                </div>
+
+                <div
+                    id="shop-grid"
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12"
+                >
+                </div>
+
+                <nav
+                    id="shop-pagination"
+                    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-neutral-100"
+                    aria-label="Paginación de productos"
+                >
+                    <p
+                        id="shop-pagination-summary"
+                        class="text-xs text-neutral-500 font-inter"
+                    >
+                    </p>
+                    <div class="join flex flex-wrap justify-center sm:justify-end">
+                        <button
+                            type="button"
+                            id="shop-page-prev"
+                            class="btn btn-sm join-item rounded-l-xl"
+                        >
+                            Anterior
+                        </button>
+                        <button
+                            type="button"
+                            id="shop-page-next"
+                            class="btn btn-sm join-item rounded-r-xl"
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </main>
+</Layout>
+
+<script>
+    import { loadPublicProductList } from "../catalog/application/load-public-product-list.use-case";
+    import { bootShopCatalogPage } from "../catalog/client/boot-shop-catalog-page";
+    import type { CatalogProduct } from "../catalog/domain/product";
+
+    const PAGE_SIZE = 12;
+
+    const envAlert = document.getElementById("shop-env-alert");
+    const loading = document.getElementById("shop-loading");
+    const shell = document.getElementById("shop-shell");
+    const form = document.getElementById("shop-filter-form");
+    const qInput = document.getElementById("shop-q");
+    const errBox = document.getElementById("shop-list-error");
+    const emptyBox = document.getElementById("shop-empty");
+    const grid = document.getElementById("shop-grid");
+    const summary = document.getElementById("shop-pagination-summary");
+    const btnPrev = document.getElementById("shop-page-prev");
+    const btnNext = document.getElementById("shop-page-next");
+    const paginationNav = document.getElementById("shop-pagination");
+
+    function readParamsFromLocation(): { page: number; q: string } {
+        const sp = new URLSearchParams(window.location.search);
+        const pageRaw = sp.get("page");
+        const parsed = Number(pageRaw);
+        const page = Number.isFinite(parsed) && parsed >= 1 ? Math.floor(parsed) : 1;
+        const q = sp.get("q")?.trim() ?? "";
+        return { page, q };
+    }
+
+    function syncUrl(page: number, q: string) {
+        const u = new URL(window.location.href);
+        if (page <= 1) {
+            u.searchParams.delete("page");
+        } else {
+            u.searchParams.set("page", String(page));
+        }
+        if (!q) {
+            u.searchParams.delete("q");
+        } else {
+            u.searchParams.set("q", q);
+        }
+        history.replaceState({}, "", u);
+    }
+
+    function showListError(message: string) {
+        if (!errBox) {
+            return;
+        }
+        errBox.textContent = message;
+        errBox.classList.remove("hidden");
+    }
+
+    function hideListError() {
+        errBox?.classList.add("hidden");
+    }
+
+    function formatMoney(value: number): string {
+        return value.toLocaleString("es-MX", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    }
+
+    function pickMainImageUrl(product: CatalogProduct): string | null {
+        const main = product.images.find((i) => i.isMain);
+        if (main?.url) {
+            return main.url;
+        }
+        return product.images[0]?.url ?? null;
+    }
+
+    function escapeHtml(s: string): string {
+        return s
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    function renderCard(product: CatalogProduct): string {
+        const href = `/producto/${encodeURIComponent(product.slug)}`;
+        const imgUrl = pickMainImageUrl(product);
+        const title = escapeHtml(product.title);
+        const price = `$${formatMoney(product.price)}`;
+        const desc = product.description?.trim();
+        const excerpt =
+            desc && desc.length > 120 ? `${escapeHtml(desc.slice(0, 117))}…` : desc
+              ? escapeHtml(desc)
+              : "";
+
+        const imageBlock = imgUrl
+            ? `<img src="${escapeHtml(imgUrl)}" alt="${title}" class="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105" loading="lazy" decoding="async" />`
+            : `<div class="flex h-full w-full items-center justify-center bg-neutral-200 text-neutral-500 text-xs font-bold uppercase tracking-widest">Sin imagen</div>`;
+
+        return `
+<a href="${href}" class="group block no-underline">
+  <div class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-neutral-100 mb-5 shadow-sm transition-shadow duration-500 group-hover:shadow-xl">
+    <div class="w-full h-full">${imageBlock}</div>
+    <div class="absolute inset-0 bg-neutral-900/0 transition-colors duration-300 group-hover:bg-neutral-900/10 z-10 pointer-events-none"></div>
+  </div>
+  <div class="text-center space-y-1 px-1">
+    <h2 class="font-montserrat font-bold text-lg text-neutral-900 group-hover:text-amber-600 transition-colors">${title}</h2>
+    <p class="font-inter font-semibold text-neutral-700">${escapeHtml(price)}</p>
+    ${excerpt ? `<p class="text-xs text-neutral-500 font-inter line-clamp-2">${excerpt}</p>` : ""}
+  </div>
+</a>`;
+    }
+
+    let currentPage = 1;
+    let currentQ = "";
+    let lastTotalPages = 1;
+
+    async function loadAndRender() {
+        const gateway = bootShopCatalogPage();
+        if (gateway === "env") {
+            envAlert?.classList.remove("hidden");
+            loading?.classList.add("hidden");
+            return;
+        }
+
+        hideListError();
+
+        const result = await loadPublicProductList(gateway, {
+            page: currentPage,
+            pageSize: PAGE_SIZE,
+            q: currentQ || undefined,
+            activeOnly: true,
+        });
+
+        loading?.classList.add("hidden");
+        shell?.classList.remove("hidden");
+
+        if (!result.ok) {
+            showListError(result.message);
+            if (grid) {
+                grid.innerHTML = "";
+            }
+            emptyBox?.classList.add("hidden");
+            paginationNav?.classList.add("hidden");
+            return;
+        }
+
+        const { items, pagination } = result.data;
+        lastTotalPages = Math.max(1, pagination.totalPages);
+
+        if (currentPage > lastTotalPages && lastTotalPages >= 1) {
+            currentPage = lastTotalPages;
+            syncUrl(currentPage, currentQ);
+            await loadAndRender();
+            return;
+        }
+
+        if (summary) {
+            const from =
+                pagination.total === 0
+                    ? 0
+                    : (pagination.page - 1) * pagination.pageSize + 1;
+            const to = Math.min(
+                pagination.page * pagination.pageSize,
+                pagination.total,
+            );
+            summary.textContent = `Mostrando ${from}–${to} de ${pagination.total} · Página ${pagination.page} de ${lastTotalPages}`;
+        }
+
+        if (btnPrev instanceof HTMLButtonElement) {
+            btnPrev.disabled = pagination.page <= 1;
+        }
+        if (btnNext instanceof HTMLButtonElement) {
+            btnNext.disabled = pagination.page >= lastTotalPages;
+        }
+
+        if (!grid) {
+            return;
+        }
+
+        if (items.length === 0) {
+            grid.innerHTML = "";
+            emptyBox?.classList.remove("hidden");
+            if (pagination.total === 0) {
+                paginationNav?.classList.add("hidden");
+            } else {
+                paginationNav?.classList.remove("hidden");
+            }
+            return;
+        }
+
+        emptyBox?.classList.add("hidden");
+        paginationNav?.classList.remove("hidden");
+        grid.innerHTML = items.map(renderCard).join("");
+    }
+
+    function applyLocationToState() {
+        const { page, q } = readParamsFromLocation();
+        currentPage = page;
+        currentQ = q;
+        if (qInput instanceof HTMLInputElement) {
+            qInput.value = q;
+        }
+    }
+
+    async function init() {
+        applyLocationToState();
+        await loadAndRender();
+    }
+
+    form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const q =
+            qInput instanceof HTMLInputElement ? qInput.value.trim() : "";
+        currentQ = q;
+        currentPage = 1;
+        syncUrl(currentPage, currentQ);
+        await loadAndRender();
+    });
+
+    btnPrev?.addEventListener("click", async () => {
+        if (currentPage <= 1) {
+            return;
+        }
+        currentPage -= 1;
+        syncUrl(currentPage, currentQ);
+        await loadAndRender();
+    });
+
+    btnNext?.addEventListener("click", async () => {
+        if (currentPage >= lastTotalPages) {
+            return;
+        }
+        currentPage += 1;
+        syncUrl(currentPage, currentQ);
+        await loadAndRender();
+    });
+
+    window.addEventListener("popstate", () => {
+        applyLocationToState();
+        void loadAndRender();
+    });
+
+    void init();
+</script>

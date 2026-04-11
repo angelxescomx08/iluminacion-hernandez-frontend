@@ -189,6 +189,27 @@ export function createHttpProductsGateway(
             return parseProductPayload(payload);
         },
 
+        async getBySlug(slug: string): Promise<CatalogResult<CatalogProduct>> {
+            const response = await fetch(
+                `${productsRoot}/by-slug/${encodeURIComponent(slug)}`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                },
+            );
+            const payload = await readJsonSafe(response);
+            if (!response.ok) {
+                return catalogFailure(
+                    response.status,
+                    extractApiError(
+                        payload,
+                        response.statusText || "Producto no encontrado",
+                    ),
+                );
+            }
+            return parseProductPayload(payload);
+        },
+
         async create(
             input: CreateProductInput,
         ): Promise<CatalogResult<CatalogProduct>> {

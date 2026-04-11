@@ -1,0 +1,183 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { loadPublicProductBySlug } from "../../catalog/application/load-public-product-by-slug.use-case";
+import { createHttpProductsGateway } from "../../catalog/adapters/http-products-gateway";
+
+export async function getStaticPaths() {
+    const base = import.meta.env.PUBLIC_API_URL?.trim();
+    if (!base) {
+        return [];
+    }
+    const gateway = createHttpProductsGateway(base);
+    const paths: { params: { slug: string } }[] = [];
+    const seen = new Set<string>();
+    let page = 1;
+    let totalPages = 1;
+    do {
+        const result = await gateway.list({
+            page,
+            pageSize: 100,
+            activeOnly: true,
+        });
+        if (!result.ok) {
+            break;
+        }
+        for (const item of result.data.items) {
+            const s = item.slug?.trim();
+            if (s && !seen.has(s)) {
+                seen.add(s);
+                paths.push({ params: { slug: s } });
+            }
+        }
+        totalPages = result.data.pagination.totalPages;
+        page += 1;
+    } while (page <= totalPages);
+    return paths;
+}
+
+const slug = Astro.params.slug?.trim();
+const base = import.meta.env.PUBLIC_API_URL?.trim();
+
+if (!slug || !base) {
+    return Astro.redirect("/tienda");
+}
+
+const gateway = createHttpProductsGateway(base);
+const result = await loadPublicProductBySlug(gateway, slug);
+
+if (!result.ok) {
+    return Astro.redirect("/tienda");
+}
+
+const product = result.data;
+
+const mainImage =
+    product.images.find((i) => i.isMain)?.url ??
+    product.images[0]?.url ??
+    null;
+
+const priceLabel = `$${product.price.toLocaleString("es-MX", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+})}`;
+
+const pageTitle = `${product.title} | Iluminación Hernández`;
+---
+
+<Layout title={pageTitle}>
+    <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-10 md:py-14 px-4 sm:px-6">
+        <div class="max-w-5xl mx-auto">
+            <nav class="text-xs font-inter text-neutral-500 mb-8">
+                <a href="/tienda" class="hover:text-amber-600 transition-colors"
+                    >Tienda</a
+                >
+                <span class="mx-2 opacity-40">/</span>
+                <span class="text-neutral-800 font-medium">{product.title}</span
+                >
+            </nav>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+                <div
+                    class="rounded-3xl overflow-hidden bg-neutral-100 border border-neutral-100 shadow-sm aspect-[3/4] lg:aspect-square"
+                >
+                    {
+                        mainImage ? (
+                            <img
+                                src={mainImage}
+                                alt={product.title}
+                                class="w-full h-full object-cover"
+                                loading="eager"
+                                decoding="async"
+                            />
+                        ) : (
+                            <div class="w-full h-full flex items-center justify-center text-neutral-400 text-xs font-bold uppercase tracking-widest">
+                                Sin imagen
+                            </div>
+                        )
+                    }
+                </div>
+
+                <div class="space-y-6">
+                    <header class="space-y-3">
+                        <p
+                            class="text-[10px] uppercase tracking-[0.35em] text-amber-600 font-bold"
+                        >
+                            Producto
+                        </p>
+                        <h1
+                            class="text-3xl md:text-4xl font-montserrat font-black text-neutral-900 tracking-tight"
+                        >
+                            {product.title}
+                        </h1>
+                        <p
+                            class="text-2xl font-inter font-semibold text-neutral-800"
+                        >
+                            {priceLabel}
+                        </p>
+                        {
+                            product.stock !== null && (
+                                <p class="text-sm text-neutral-500 font-inter">
+                                    Stock disponible:{" "}
+                                    <span class="font-semibold text-neutral-700">
+                                        {product.stock}
+                                    </span>
+                                </p>
+                            )
+                        }
+                    </header>
+
+                    {
+                        product.description && (
+                            <p
+                                class="text-neutral-600 font-inter text-sm md:text-base leading-relaxed whitespace-pre-line"
+                            >
+                                {product.description}
+                            </p>
+                        )
+                    }
+
+                    {
+                        product.characteristics && (
+                            <section class="border-t border-neutral-100 pt-6">
+                                <h2
+                                    class="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-2"
+                                >
+                                    Características
+                                </h2>
+                                <p
+                                    class="text-sm text-neutral-600 font-inter whitespace-pre-line"
+                                >
+                                    {product.characteristics}
+                                </p>
+                            </section>
+                        )
+                    }
+
+                    {
+                        product.content && (
+                            <section class="border-t border-neutral-100 pt-6">
+                                <h2
+                                    class="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-2"
+                                >
+                                    Más información
+                                </h2>
+                                <div
+                                    class="text-sm text-neutral-600 font-inter leading-relaxed whitespace-pre-line"
+                                >
+                                    {product.content}
+                                </div>
+                            </section>
+                        )
+                    }
+
+                    <a
+                        href="/tienda"
+                        class="inline-flex btn btn-outline border-neutral-200 rounded-xl font-montserrat font-bold tracking-widest text-[11px]"
+                    >
+                        Volver a la tienda
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</Layout>
