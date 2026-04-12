@@ -1,0 +1,90 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const addressLines = [
+    "Victoria 31, Pasillo de acceso centro",
+    "Cuauhtémoc, Mexico City, Mexico, 06050",
+] as const;
+
+const mapsQuery = encodeURIComponent(
+    "Victoria 31, Pasillo de acceso centro, Cuauhtémoc, Mexico City, Mexico, 06050",
+);
+const mapsHref = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+/** Embed sin API key: búsqueda por dirección (mismo criterio que “Abrir en Maps”). */
+const mapsEmbedSrc = `https://maps.google.com/maps?q=${mapsQuery}&hl=es&z=17&output=embed`;
+---
+
+<Layout title="Sucursales | Iluminación Hernández">
+    <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-12 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="mb-10 border-l-4 border-amber-500 pl-6">
+                <p
+                    class="text-[10px] uppercase tracking-[0.35em] text-amber-600 font-bold mb-2"
+                >
+                    Ubicación
+                </p>
+                <h1
+                    class="text-3xl md:text-5xl font-montserrat font-black text-neutral-800 tracking-tight uppercase"
+                >
+                    Sucursales
+                </h1>
+                <p
+                    class="text-neutral-500 mt-2 font-inter text-sm md:text-base"
+                >
+                    Iluminación Hernández — visítanos en el centro de la ciudad.
+                </p>
+            </div>
+
+            <div
+                class="bg-white border border-neutral-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] rounded-3xl p-8 md:p-10"
+            >
+                <h2
+                    class="text-xs font-bold text-amber-600 uppercase tracking-[0.3em] mb-6"
+                >
+                    Dirección
+                </h2>
+                <address
+                    class="not-italic font-inter text-base md:text-lg text-neutral-800 font-medium leading-relaxed mb-8"
+                >
+                    {addressLines.map((line) => (
+                        <>
+                            {line}
+                            <br />
+                        </>
+                    ))}
+                </address>
+                <a
+                    href={mapsHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn btn-neutral rounded-xl text-white font-montserrat font-bold tracking-widest text-[11px] h-12 px-8 hover:bg-amber-600 border-0"
+                >
+                    Abrir en Google Maps
+                </a>
+
+                <div
+                    class="mt-10 pt-10 border-t border-neutral-100"
+                    aria-label="Mapa de la sucursal"
+                >
+                    <h2
+                        class="text-xs font-bold text-amber-600 uppercase tracking-[0.3em] mb-4"
+                    >
+                        Mapa
+                    </h2>
+                    <div
+                        class="relative w-full overflow-hidden rounded-2xl border border-neutral-100 bg-neutral-100 shadow-inner aspect-[4/3] md:aspect-[21/9] min-h-[240px] md:min-h-[320px]"
+                    >
+                        <iframe
+                            title="Ubicación: Victoria 31, Cuauhtémoc, Ciudad de México"
+                            src={mapsEmbedSrc}
+                            class="absolute inset-0 h-full w-full border-0"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</Layout>

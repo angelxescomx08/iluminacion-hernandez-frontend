@@ -94,19 +94,23 @@
                         class="flex items-center gap-8 font-inter text-[12px] font-bold tracking-[0.15em] text-neutral-500 uppercase"
                     >
                         {
-                            ["Tienda", "Marcas", "Contacto", "Sucursales"].map(
-                                (item) => (
-                                    <li>
-                                        <a
-                                            href={`/${item.toLowerCase()}`}
-                                            class="relative py-2 whitespace-nowrap transition-colors hover:text-neutral-900 group"
-                                        >
-                                            {item}
-                                            <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-amber-500 transition-all duration-300 group-hover:w-full" />
-                                        </a>
-                                    </li>
-                                ),
-                            )
+                            [
+                                { label: "Inicio", href: "/" },
+                                { label: "Tienda", href: "/tienda" },
+                                // { label: "Marcas", href: "/marcas" },
+                                { label: "Contacto", href: "/contacto" },
+                                { label: "Sucursales", href: "/sucursales" },
+                            ].map((item) => (
+                                <li>
+                                    <a
+                                        href={item.href}
+                                        class="relative py-2 whitespace-nowrap transition-colors hover:text-neutral-900 group"
+                                    >
+                                        {item.label}
+                                        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-amber-500 transition-all duration-300 group-hover:w-full" />
+                                    </a>
+                                </li>
+                            ))
                         }
                     </ul>
                 </div>
@@ -128,7 +132,7 @@
                     <a
                         href="/login"
                         data-session-desktop-login
-                        class="btn btn-ghost btn-sm hidden sm:inline-flex font-inter font-bold text-[11px] uppercase tracking-widest text-neutral-600 hover:text-amber-600 shrink-0"
+                        class="btn btn-ghost btn-sm max-sm:hidden inline-flex font-inter font-bold text-[11px] uppercase tracking-widest text-neutral-600 hover:text-amber-600 shrink-0"
                     >
                         Entrar
                     </a>
@@ -276,18 +280,25 @@
                 >
                     <li>
                         <a
+                            href="/"
+                            class="hover:text-amber-600 transition-colors"
+                            >Inicio</a
+                        >
+                    </li>
+                    <li>
+                        <a
                             href="/tienda"
                             class="hover:text-amber-600 transition-colors"
                             >Tienda</a
                         >
                     </li>
-                    <li>
+                    <!-- <li>
                         <a
                             href="/marcas"
                             class="hover:text-amber-600 transition-colors"
                             >Marcas</a
                         >
-                    </li>
+                    </li> -->
                     <li>
                         <a
                             href="/contacto"

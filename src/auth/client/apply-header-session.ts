@@ -140,7 +140,15 @@ function applyNavGroup(els: SessionElements, session: ClientSession) {
     const auth = isAuthenticatedSession(session);
     const admin = isAdminClientSession(session);
 
-    setHidden(els.desktopLogin, auth);
+    // `!hidden` evita que utilidades responsive (`sm:inline-flex`, etc.) sigan mostrando el enlace.
+    if (els.desktopLogin) {
+        els.desktopLogin.classList.toggle("!hidden", auth);
+        if (auth) {
+            els.desktopLogin.setAttribute("aria-hidden", "true");
+        } else {
+            els.desktopLogin.removeAttribute("aria-hidden");
+        }
+    }
     setHidden(els.itemLogin, auth);
     setHidden(els.itemRegister, auth);
     setHidden(els.itemPanel, !auth);
