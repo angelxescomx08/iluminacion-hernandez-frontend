@@ -13,7 +13,9 @@ const publicSite = process.env.PUBLIC_SITE_URL?.trim();
 export default defineConfig({
   site: publicSite,
   output: 'server',
-  adapter: node({ mode: 'standalone' }),
+  adapter: node({ 
+    mode: 'standalone',
+  }),
   trailingSlash: 'never',
   build: {
     format: 'file',
