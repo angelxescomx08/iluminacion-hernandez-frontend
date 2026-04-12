@@ -3,37 +3,13 @@ import Layout from "../../layouts/Layout.astro";
 import { loadPublicProductBySlug } from "../../catalog/application/load-public-product-by-slug.use-case";
 import { createHttpProductsGateway } from "../../catalog/adapters/http-products-gateway";
 
-export async function getStaticPaths() {
-    const base = import.meta.env.PUBLIC_API_URL?.trim();
-    if (!base) {
-        return [];
-    }
-    const gateway = createHttpProductsGateway(base);
-    const paths: { params: { slug: string } }[] = [];
-    const seen = new Set<string>();
-    let page = 1;
-    let totalPages = 1;
-    do {
-        const result = await gateway.list({
-            page,
-            pageSize: 100,
-            activeOnly: true,
-        });
-        if (!result.ok) {
-            break;
-        }
-        for (const item of result.data.items) {
-            const s = item.slug?.trim();
-            if (s && !seen.has(s)) {
-                seen.add(s);
-                paths.push({ params: { slug: s } });
-            }
-        }
-        totalPages = result.data.pagination.totalPages;
-        page += 1;
-    } while (page <= totalPages);
-    return paths;
-}
+/** SSR con adaptador Node: HTML del producto se genera en cada petición desde el API. */
+export const prerender = false;
+
+Astro.response.headers.set(
+    "Cache-Control",
+    "private, no-store, must-revalidate",
+);
 
 const slug = Astro.params.slug?.trim();
 const base = import.meta.env.PUBLIC_API_URL?.trim();
