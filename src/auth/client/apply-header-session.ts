@@ -3,6 +3,7 @@ import {
     isAuthenticatedSession,
     type ClientSession,
 } from "../domain/client-session";
+import { applyTruncatableHints } from "../../presentation/ui/truncatable-text";
 import { initialsFromDisplayName, initialsFromEmail } from "./avatar-placeholder";
 
 type SessionElements = {
@@ -158,24 +159,23 @@ function applyNavGroup(els: SessionElements, session: ClientSession) {
     setHidden(els.itemLogout, !auth);
 
     if (els.menuTitle) {
-        els.menuTitle.textContent = auth
-            ? session.user.displayName
-            : "Modo invitado";
+        const label = auth ? session.user.displayName : "Modo invitado";
+        els.menuTitle.textContent = label;
+        applyTruncatableHints(els.menuTitle, label);
     }
 
     if (els.menuSubtitle) {
-        if (auth) {
-            els.menuSubtitle.textContent =
-                session.user.email ?? "Cuenta conectada";
-        } else {
-            els.menuSubtitle.textContent = "Inicia sesión para guardar preferencias";
-        }
+        const sub = auth
+            ? (session.user.email ?? "Cuenta conectada")
+            : "Inicia sesión para guardar preferencias";
+        els.menuSubtitle.textContent = sub;
+        applyTruncatableHints(els.menuSubtitle, sub);
     }
 
     if (els.primaryLine) {
-        els.primaryLine.textContent = auth
-            ? session.user.displayName
-            : "Invitado";
+        const line = auth ? session.user.displayName : "Invitado";
+        els.primaryLine.textContent = line;
+        applyTruncatableHints(els.primaryLine, line);
     }
 
     if (els.avatarTrigger) {

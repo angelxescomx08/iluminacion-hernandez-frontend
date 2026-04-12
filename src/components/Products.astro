@@ -1,6 +1,7 @@
 ---
 import { pickMainProductImageUrl } from "../catalog/application/pick-main-product-image-url";
 import type { CatalogProduct } from "../catalog/domain/product";
+import TruncatableText from "./TruncatableText.astro";
 
 interface Props {
     products: CatalogProduct[];
@@ -74,14 +75,22 @@ function formatPriceMx(value: number): string {
                 </div>
               </div>
 
-              <div class="text-center space-y-1">
+              <div class="text-center space-y-1 min-w-0 px-1">
                 {subtitle ? (
-                  <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-bold line-clamp-2">
-                    {subtitle}
-                  </p>
+                  <TruncatableText
+                    text={subtitle}
+                    lines={2}
+                    class="w-full"
+                    innerClass="text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-bold text-center"
+                  />
                 ) : null}
-                <h4 class="font-montserrat font-bold text-lg text-neutral-900 group-hover:text-amber-600 transition-colors">
-                  {product.title}
+                <h4 class="font-montserrat font-bold text-lg text-neutral-900 group-hover:text-amber-600 transition-colors min-w-0">
+                  <TruncatableText
+                    text={product.title}
+                    lines={2}
+                    class="w-full"
+                    innerClass="text-center"
+                  />
                 </h4>
                 <p class="font-inter font-medium text-neutral-700 pt-1">
                   {priceLabel}

@@ -1,0 +1,43 @@
+---
+import {
+    normalizeForTooltip,
+    truncatableInnerClassList,
+    TRUNCATABLE_TOOLTIP_WRAP_CLASSES,
+} from "../presentation/ui/truncatable-text";
+
+interface Props {
+    text: string;
+    lines?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+    class?: string;
+    innerClass?: string;
+    /** Preserva saltos de línea del API (útil en descripciones). */
+    preserveLineBreaks?: boolean;
+}
+
+const {
+    text,
+    lines = 1,
+    class: className = "",
+    innerClass: innerExtra = "",
+    preserveLineBreaks = false,
+} = Astro.props;
+
+const tip = normalizeForTooltip(text);
+const wrapClasses = [TRUNCATABLE_TOOLTIP_WRAP_CLASSES, className]
+    .filter(Boolean)
+    .join(" ");
+const innerClasses = [
+    truncatableInnerClassList(lines, { preserveLineBreaks }),
+    innerExtra,
+]
+    .filter(Boolean)
+    .join(" ");
+---
+
+{
+    text.trim() ? (
+        <span class={wrapClasses} data-tip={tip}>
+            <span class={innerClasses}>{text}</span>
+        </span>
+    ) : null
+}

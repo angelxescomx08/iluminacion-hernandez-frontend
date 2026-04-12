@@ -1,3 +1,7 @@
+import { applyTruncatableHints } from "../../presentation/ui/truncatable-text";
+
+const overflowClampClasses = ["line-clamp-3", "break-words", "min-w-0", "max-w-full"];
+
 /**
  * Mensajes de validación junto al control (DaisyUI: input-error / textarea-error).
  * El párrafo de error debe tener id `${fieldId}-error`.
@@ -12,9 +16,17 @@ export function setInlineFieldError(
         if (!message) {
             err.textContent = "";
             err.classList.add("hidden");
+            for (const c of overflowClampClasses) {
+                err.classList.remove(c);
+            }
+            applyTruncatableHints(err, "");
         } else {
             err.textContent = message;
             err.classList.remove("hidden");
+            for (const c of overflowClampClasses) {
+                err.classList.add(c);
+            }
+            applyTruncatableHints(err, message);
         }
     }
     if (!field) {
@@ -44,8 +56,16 @@ export function setHelperLineError(
     if (!message) {
         el.textContent = "";
         el.classList.add("hidden");
+        for (const c of overflowClampClasses) {
+            el.classList.remove(c);
+        }
+        applyTruncatableHints(el, "");
     } else {
         el.textContent = message;
         el.classList.remove("hidden");
+        for (const c of overflowClampClasses) {
+            el.classList.add(c);
+        }
+        applyTruncatableHints(el, message);
     }
 }

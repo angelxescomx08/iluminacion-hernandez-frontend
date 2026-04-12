@@ -153,6 +153,7 @@ import Layout from "../layouts/Layout.astro";
     import { bootShopCatalogPage } from "../catalog/client/boot-shop-catalog-page";
     import type { CatalogProduct } from "../catalog/domain/product";
     import type { ProductsGatewayPort } from "../catalog/ports/products-gateway.port";
+    import { buildTruncatableHtmlFragment } from "../presentation/ui/truncatable-text";
 
     const PAGE_SIZE = 12;
 
@@ -225,16 +226,26 @@ import Layout from "../layouts/Layout.astro";
     function renderCard(product: CatalogProduct, showAdminDelete: boolean): string {
         const href = `/producto/${encodeURIComponent(product.slug)}`;
         const imgUrl = pickMainProductImageUrl(product);
-        const title = escapeHtml(product.title);
         const price = `$${formatMoney(product.price)}`;
         const desc = product.description?.trim();
-        const excerpt =
-            desc && desc.length > 120 ? `${escapeHtml(desc.slice(0, 117))}…` : desc
-              ? escapeHtml(desc)
-              : "";
+        const titleHtml = buildTruncatableHtmlFragment({
+            text: product.title,
+            lines: 2,
+            innerExtraClass:
+                "font-montserrat font-bold text-lg text-neutral-900 group-hover:text-amber-600 transition-colors text-center",
+        });
+        const descHtml = desc
+            ? buildTruncatableHtmlFragment({
+                  text: desc,
+                  lines: 3,
+                  preserveLineBreaks: true,
+                  innerExtraClass:
+                      "text-xs text-neutral-500 font-inter text-center",
+              })
+            : "";
 
         const imageBlock = imgUrl
-            ? `<img src="${escapeHtml(imgUrl)}" alt="${title}" class="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105" loading="lazy" decoding="async" />`
+            ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(product.title)}" class="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105" loading="lazy" decoding="async" />`
             : `<div class="flex h-full w-full items-center justify-center bg-neutral-200 text-neutral-500 text-xs font-bold uppercase tracking-widest">Sin imagen</div>`;
 
         const deleteBtn = showAdminDelete
@@ -249,10 +260,10 @@ import Layout from "../layouts/Layout.astro";
       <div class="w-full h-full">${imageBlock}</div>
       <div class="absolute inset-0 bg-neutral-900/0 transition-colors duration-300 group-hover:bg-neutral-900/10 z-10 pointer-events-none"></div>
     </div>
-    <div class="text-center space-y-1 px-1">
-      <h2 class="font-montserrat font-bold text-lg text-neutral-900 group-hover:text-amber-600 transition-colors">${title}</h2>
+    <div class="text-center space-y-1 px-1 min-w-0">
+      <h2 class="min-w-0">${titleHtml}</h2>
       <p class="font-inter font-semibold text-neutral-700">${escapeHtml(price)}</p>
-      ${excerpt ? `<p class="text-xs text-neutral-500 font-inter line-clamp-2">${excerpt}</p>` : ""}
+      ${descHtml ? `<div class="min-w-0">${descHtml}</div>` : ""}
     </div>
   </a>
 </div>`;

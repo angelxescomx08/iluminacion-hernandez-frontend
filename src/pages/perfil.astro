@@ -130,6 +130,7 @@ import Layout from "../layouts/Layout.astro";
         isAuthenticatedSession,
     } from "../auth/domain/client-session";
     import { initialsFromDisplayName, initialsFromEmail } from "../auth/client/avatar-placeholder";
+    import { applyTruncatableHints } from "../presentation/ui/truncatable-text";
 
     const envAlert = document.getElementById("perfil-env-alert");
     const loading = document.getElementById("perfil-loading");
@@ -164,9 +165,12 @@ import Layout from "../layouts/Layout.astro";
         const { displayName, email, imageUrl } = session.user;
         if (nameEl) {
             nameEl.textContent = displayName;
+            applyTruncatableHints(nameEl, displayName);
         }
         if (emailEl) {
-            emailEl.textContent = email ?? "Sin correo en la sesión";
+            const mailLabel = email ?? "Sin correo en la sesión";
+            emailEl.textContent = mailLabel;
+            applyTruncatableHints(emailEl, mailLabel);
         }
 
         const fromName = initialsFromDisplayName(displayName);

@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import TruncatableText from "../../components/TruncatableText.astro";
 import { loadPublicProductBySlug } from "../../catalog/application/load-public-product-by-slug.use-case";
 import { createHttpProductsGateway } from "../../catalog/adapters/http-products-gateway";
 
@@ -48,8 +49,12 @@ const pageTitle = `${product.title} | Iluminación Hernández`;
                     >Tienda</a
                 >
                 <span class="mx-2 opacity-40">/</span>
-                <span class="text-neutral-800 font-medium">{product.title}</span
-                >
+                <TruncatableText
+                    text={product.title}
+                    lines={1}
+                    class="text-neutral-800 font-medium max-w-[min(100%,18rem)] sm:max-w-md"
+                    innerClass="font-medium"
+                />
             </nav>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
@@ -81,9 +86,14 @@ const pageTitle = `${product.title} | Iluminación Hernández`;
                             Producto
                         </p>
                         <h1
-                            class="text-3xl md:text-4xl font-montserrat font-black text-neutral-900 tracking-tight"
+                            class="text-3xl md:text-4xl font-montserrat font-black text-neutral-900 tracking-tight min-w-0"
                         >
-                            {product.title}
+                            <TruncatableText
+                                text={product.title}
+                                lines={3}
+                                class="w-full"
+                                innerClass="font-montserrat font-black text-neutral-900 tracking-tight"
+                            />
                         </h1>
                         <p
                             class="text-2xl font-inter font-semibold text-neutral-800"
@@ -104,10 +114,14 @@ const pageTitle = `${product.title} | Iluminación Hernández`;
 
                     {
                         product.description && (
-                            <p
-                                class="text-neutral-600 font-inter text-sm md:text-base leading-relaxed whitespace-pre-line"
-                            >
-                                {product.description}
+                            <p class="min-w-0">
+                                <TruncatableText
+                                    text={product.description}
+                                    lines={6}
+                                    preserveLineBreaks
+                                    class="w-full"
+                                    innerClass="text-neutral-600 font-inter text-sm md:text-base leading-relaxed"
+                                />
                             </p>
                         )
                     }
@@ -120,10 +134,14 @@ const pageTitle = `${product.title} | Iluminación Hernández`;
                                 >
                                     Características
                                 </h2>
-                                <p
-                                    class="text-sm text-neutral-600 font-inter whitespace-pre-line"
-                                >
-                                    {product.characteristics}
+                                <p class="min-w-0">
+                                    <TruncatableText
+                                        text={product.characteristics}
+                                        lines={5}
+                                        preserveLineBreaks
+                                        class="w-full"
+                                        innerClass="text-sm text-neutral-600 font-inter"
+                                    />
                                 </p>
                             </section>
                         )
@@ -137,10 +155,14 @@ const pageTitle = `${product.title} | Iluminación Hernández`;
                                 >
                                     Más información
                                 </h2>
-                                <div
-                                    class="text-sm text-neutral-600 font-inter leading-relaxed whitespace-pre-line"
-                                >
-                                    {product.content}
+                                <div class="min-w-0">
+                                    <TruncatableText
+                                        text={product.content}
+                                        lines={8}
+                                        preserveLineBreaks
+                                        class="w-full"
+                                        innerClass="text-sm text-neutral-600 font-inter leading-relaxed"
+                                    />
                                 </div>
                             </section>
                         )

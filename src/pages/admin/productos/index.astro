@@ -231,6 +231,7 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
     import { bootAdminCatalogPage } from "../../../catalog/client/boot-admin-catalog-page";
     import type { CatalogProduct } from "../../../catalog/domain/product";
     import type { ProductsGatewayPort } from "../../../catalog/ports/products-gateway.port";
+    import { buildTruncatableHtmlFragment } from "../../../presentation/ui/truncatable-text";
 
     const envAlert = document.getElementById("admin-env-alert");
     const loading = document.getElementById("admin-loading");
@@ -283,8 +284,16 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
         for (const p of items) {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-        <td class="font-medium text-neutral-800 max-w-[200px] truncate">${escapeHtml(p.title)}</td>
-        <td class="text-xs text-neutral-500 max-w-[160px] truncate">${escapeHtml(p.slug)}</td>
+        <td class="max-w-[220px] align-top py-3">${buildTruncatableHtmlFragment({
+            text: p.title,
+            lines: 2,
+            innerExtraClass: "font-medium text-neutral-800",
+        })}</td>
+        <td class="max-w-[180px] align-top py-3">${buildTruncatableHtmlFragment({
+            text: p.slug,
+            lines: 1,
+            innerExtraClass: "text-xs text-neutral-500 font-mono",
+        })}</td>
         <td class="text-right font-mono text-sm">${formatMoney(p.price)}</td>
         <td class="text-right text-sm">${p.stock ?? "—"}</td>
         <td>${p.isActive ? '<span class="badge badge-success badge-sm">Activo</span>' : '<span class="badge badge-ghost badge-sm">Inactivo</span>'}</td>
@@ -310,14 +319,6 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
                 }
             });
         });
-    }
-
-    function escapeHtml(s: string): string {
-        return s
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;");
     }
 
     let catalogGateway!: ProductsGatewayPort;

@@ -1,3 +1,19 @@
 @import "tailwindcss";
 @plugin "daisyui";
 @import "./fonts.css";
+
+/* Tooltips largos (texto dinámico): DaisyUI usa el pseudo-elemento del contenedor. */
+@layer components {
+    .ih-dynamic-tip::before {
+        max-width: min(22rem, 90vw);
+        width: max-content;
+        white-space: normal;
+        word-break: break-word;
+        text-align: left;
+        line-height: 1.35;
+        height: auto;
+        min-height: 0;
+        padding-block: 0.45rem;
+        padding-inline: 0.6rem;
+    }
+}

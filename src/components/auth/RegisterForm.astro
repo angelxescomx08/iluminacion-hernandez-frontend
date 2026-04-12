@@ -29,7 +29,7 @@ const postRegisterPath = Astro.url.searchParams.get("redirect") ?? "/";
 
     <div
         id="register-error"
-        class="alert alert-error text-sm mb-6 hidden"
+        class="alert alert-error text-sm mb-6 hidden min-w-0 max-w-full"
         role="alert"
     ></div>
 
@@ -121,6 +121,7 @@ const postRegisterPath = Astro.url.searchParams.get("redirect") ?? "/";
 <script>
     import { tryCreateBrowserAuthGateway } from "../../auth/client/create-browser-auth-gateway";
     import { registerWithEmail } from "../../auth/application/register-with-email.use-case";
+    import { applyTruncatableHints } from "../../presentation/ui/truncatable-text";
 
     const cfg = document.getElementById("register-config");
     const redirectPath =
@@ -140,10 +141,15 @@ const postRegisterPath = Astro.url.searchParams.get("redirect") ?? "/";
         if (!errorBox) return;
         errorBox.textContent = message;
         errorBox.classList.remove("hidden");
+        errorBox.classList.add("line-clamp-4", "break-words");
+        applyTruncatableHints(errorBox, message);
     }
 
     function hideError() {
-        errorBox?.classList.add("hidden");
+        if (!errorBox) return;
+        errorBox.classList.add("hidden");
+        errorBox.classList.remove("line-clamp-4", "break-words");
+        applyTruncatableHints(errorBox, "");
     }
 
     function setLoading(loading: boolean) {
