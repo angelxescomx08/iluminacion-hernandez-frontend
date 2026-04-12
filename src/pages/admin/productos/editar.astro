@@ -219,10 +219,10 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
                 </button>
                 <button
                     type="button"
-                    id="btn-archive"
-                    class="btn btn-outline btn-error rounded-xl h-12 font-inter font-semibold border-error/40"
+                    id="btn-delete-product"
+                    class="btn btn-outline btn-error rounded-xl h-12 font-inter font-semibold border-error/40 shrink-0"
                 >
-                    Archivar
+                    Eliminar producto
                 </button>
             </div>
         </form>
@@ -293,10 +293,62 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
             >
             </div>
         </section>
+
+        <dialog
+            id="delete-product-modal"
+            class="modal modal-middle"
+            aria-labelledby="delete-product-modal-title"
+        >
+            <div
+                class="modal-box rounded-2xl border border-neutral-200 bg-white shadow-2xl max-w-md w-[calc(100%-2rem)] p-6 sm:p-8"
+            >
+                <h3
+                    id="delete-product-modal-title"
+                    class="font-montserrat font-bold text-lg text-neutral-900 tracking-tight"
+                >
+                    Eliminar producto
+                </h3>
+                <p
+                    class="mt-3 text-sm text-neutral-600 font-inter leading-relaxed"
+                >
+                    ¿Eliminar este producto del catálogo activo? Se desactivará
+                    (baja lógica) y se archivará en Stripe.
+                </p>
+                <div
+                    class="modal-action mt-6 flex-col-reverse sm:flex-row gap-2 sm:justify-end"
+                >
+                    <form method="dialog" class="w-full sm:w-auto m-0">
+                        <button
+                            type="submit"
+                            class="btn btn-outline border-neutral-200 text-neutral-700 rounded-xl h-11 min-h-11 w-full sm:w-auto font-inter font-semibold"
+                        >
+                            Cancelar
+                        </button>
+                    </form>
+                    <button
+                        type="button"
+                        id="delete-product-confirm"
+                        class="btn btn-error rounded-xl h-11 min-h-11 w-full sm:w-auto text-white font-montserrat font-bold tracking-widest text-[11px] px-6"
+                    >
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+            <form method="dialog" class="modal-backdrop bg-neutral-900/50">
+                <button
+                    type="submit"
+                    class="cursor-default min-h-full w-full opacity-0"
+                    aria-label="Cerrar"
+                >
+                    close
+                </button>
+            </form>
+        </dialog>
     </div>
 </AdminLayout>
 
 <script>
+    import { deleteCatalogProduct } from "../../../catalog/application/delete-catalog-product.use-case";
     import { deleteProductImage } from "../../../catalog/application/delete-product-image.use-case";
     import { setMainProductImage } from "../../../catalog/application/set-main-product-image.use-case";
     import { uploadProductImage } from "../../../catalog/application/upload-product-image.use-case";
@@ -318,7 +370,11 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
     const shell = document.getElementById("admin-shell");
     const form = document.getElementById("product-edit-form");
     const saveBtn = document.getElementById("btn-save");
-    const archiveBtn = document.getElementById("btn-archive");
+    const deleteProductBtn = document.getElementById("btn-delete-product");
+    const deleteProductModal = document.getElementById("delete-product-modal");
+    const deleteProductConfirm = document.getElementById(
+        "delete-product-confirm",
+    );
     const imagesList = document.getElementById("images-list");
     const imageFile = document.getElementById("image-file");
     const fieldId = document.getElementById("field-id");
@@ -634,21 +690,39 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
             renderImages(result.data, resolvedProductId);
         });
 
-        archiveBtn?.addEventListener("click", async () => {
-            if (
-                !confirm(
-                    "¿Archivar este producto? Se desactivará en catálogo y en Stripe.",
-                )
-            ) {
-                return;
-            }
+        deleteProductBtn?.addEventListener("click", () => {
             hideError();
-            const res = await catalogGateway.remove(resolvedProductId);
-            if (!res.ok) {
-                showSaveFooterError(res.message);
+            if (deleteProductModal instanceof HTMLDialogElement) {
+                deleteProductModal.showModal();
+            }
+        });
+
+        deleteProductConfirm?.addEventListener("click", async () => {
+            if (!(deleteProductModal instanceof HTMLDialogElement)) {
                 return;
             }
-            window.location.assign("/admin/productos");
+            if (!(deleteProductConfirm instanceof HTMLButtonElement)) {
+                return;
+            }
+            deleteProductConfirm.disabled = true;
+            deleteProductConfirm.classList.add("btn-loading");
+            try {
+                hideError();
+                const res = await deleteCatalogProduct(
+                    catalogGateway,
+                    resolvedProductId,
+                );
+                if (!res.ok) {
+                    showSaveFooterError(res.message);
+                    deleteProductModal.close();
+                    return;
+                }
+                deleteProductModal.close();
+                window.location.assign("/admin/productos");
+            } finally {
+                deleteProductConfirm.disabled = false;
+                deleteProductConfirm.classList.remove("btn-loading");
+            }
         });
 
         async function handlePickedImageFiles(files: File[]) {

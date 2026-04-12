@@ -90,11 +90,16 @@ import Layout from "../layouts/Layout.astro";
                     id="shop-empty"
                     class="hidden text-center py-16 px-4 rounded-2xl border border-dashed border-neutral-200 bg-white"
                 >
-                    <p class="font-montserrat font-bold text-neutral-800">
-                        No hay productos que coincidan
+                    <p
+                        id="shop-empty-title"
+                        class="font-montserrat font-bold text-neutral-800"
+                    >
+                        No hay productos para mostrar
                     </p>
-                    <p class="text-sm text-neutral-500 mt-2 font-inter">
-                        Prueba con otros términos o vuelve más tarde.
+                    <p
+                        id="shop-empty-sub"
+                        class="text-sm text-neutral-500 mt-2 font-inter max-w-md mx-auto"
+                    >
                     </p>
                 </div>
 
@@ -137,10 +142,15 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
+    import { loadClientSession } from "../auth/application/load-client-session.use-case";
+    import { isAdminClientSession } from "../auth/domain/client-session";
+    import { tryCreateBrowserAuthGateway } from "../auth/client/create-browser-auth-gateway";
+    import { deleteCatalogProduct } from "../catalog/application/delete-catalog-product.use-case";
     import { loadPublicProductList } from "../catalog/application/load-public-product-list.use-case";
     import { pickMainProductImageUrl } from "../catalog/application/pick-main-product-image-url";
     import { bootShopCatalogPage } from "../catalog/client/boot-shop-catalog-page";
     import type { CatalogProduct } from "../catalog/domain/product";
+    import type { ProductsGatewayPort } from "../catalog/ports/products-gateway.port";
 
     const PAGE_SIZE = 12;
 
@@ -151,6 +161,8 @@ import Layout from "../layouts/Layout.astro";
     const qInput = document.getElementById("shop-q");
     const errBox = document.getElementById("shop-list-error");
     const emptyBox = document.getElementById("shop-empty");
+    const emptyTitle = document.getElementById("shop-empty-title");
+    const emptySub = document.getElementById("shop-empty-sub");
     const grid = document.getElementById("shop-grid");
     const summary = document.getElementById("shop-pagination-summary");
     const btnPrev = document.getElementById("shop-page-prev");
@@ -208,7 +220,7 @@ import Layout from "../layouts/Layout.astro";
             .replace(/"/g, "&quot;");
     }
 
-    function renderCard(product: CatalogProduct): string {
+    function renderCard(product: CatalogProduct, showAdminDelete: boolean): string {
         const href = `/producto/${encodeURIComponent(product.slug)}`;
         const imgUrl = pickMainProductImageUrl(product);
         const title = escapeHtml(product.title);
@@ -223,31 +235,56 @@ import Layout from "../layouts/Layout.astro";
             ? `<img src="${escapeHtml(imgUrl)}" alt="${title}" class="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105" loading="lazy" decoding="async" />`
             : `<div class="flex h-full w-full items-center justify-center bg-neutral-200 text-neutral-500 text-xs font-bold uppercase tracking-widest">Sin imagen</div>`;
 
+        const deleteBtn = showAdminDelete
+            ? `<button type="button" class="absolute top-3 right-3 z-30 btn btn-error btn-xs font-montserrat font-bold uppercase tracking-wider rounded-lg shadow-md" data-shop-delete="${escapeHtml(product.id)}" aria-label="Eliminar producto del catálogo">Eliminar</button>`
+            : "";
+
         return `
-<a href="${href}" class="group block no-underline">
-  <div class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-neutral-100 mb-5 shadow-sm transition-shadow duration-500 group-hover:shadow-xl">
-    <div class="w-full h-full">${imageBlock}</div>
-    <div class="absolute inset-0 bg-neutral-900/0 transition-colors duration-300 group-hover:bg-neutral-900/10 z-10 pointer-events-none"></div>
-  </div>
-  <div class="text-center space-y-1 px-1">
-    <h2 class="font-montserrat font-bold text-lg text-neutral-900 group-hover:text-amber-600 transition-colors">${title}</h2>
-    <p class="font-inter font-semibold text-neutral-700">${escapeHtml(price)}</p>
-    ${excerpt ? `<p class="text-xs text-neutral-500 font-inter line-clamp-2">${excerpt}</p>` : ""}
-  </div>
-</a>`;
+<div class="relative">
+  ${deleteBtn}
+  <a href="${href}" class="group block no-underline">
+    <div class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-neutral-100 mb-5 shadow-sm transition-shadow duration-500 group-hover:shadow-xl">
+      <div class="w-full h-full">${imageBlock}</div>
+      <div class="absolute inset-0 bg-neutral-900/0 transition-colors duration-300 group-hover:bg-neutral-900/10 z-10 pointer-events-none"></div>
+    </div>
+    <div class="text-center space-y-1 px-1">
+      <h2 class="font-montserrat font-bold text-lg text-neutral-900 group-hover:text-amber-600 transition-colors">${title}</h2>
+      <p class="font-inter font-semibold text-neutral-700">${escapeHtml(price)}</p>
+      ${excerpt ? `<p class="text-xs text-neutral-500 font-inter line-clamp-2">${excerpt}</p>` : ""}
+    </div>
+  </a>
+</div>`;
+    }
+
+    function applyEmptyCopy(hasSearchQuery: boolean) {
+        if (!emptyTitle || !emptySub) {
+            return;
+        }
+        if (hasSearchQuery) {
+            emptyTitle.textContent = "No hay productos que coincidan";
+            emptySub.textContent =
+                "Prueba con otros términos o vuelve más tarde.";
+        } else {
+            emptyTitle.textContent = "No hay productos para mostrar";
+            emptySub.textContent =
+                "El catálogo no tiene artículos activos en este momento.";
+        }
     }
 
     let currentPage = 1;
     let currentQ = "";
     let lastTotalPages = 1;
+    let catalogGateway: ProductsGatewayPort | null = null;
+    let isShopAdmin = false;
 
     async function loadAndRender() {
-        const gateway = bootShopCatalogPage();
+        const gateway = catalogGateway ?? bootShopCatalogPage();
         if (gateway === "env") {
             envAlert?.classList.remove("hidden");
             loading?.classList.add("hidden");
             return;
         }
+        catalogGateway = gateway;
 
         hideListError();
 
@@ -306,6 +343,7 @@ import Layout from "../layouts/Layout.astro";
 
         if (items.length === 0) {
             grid.innerHTML = "";
+            applyEmptyCopy(Boolean(currentQ.trim()));
             emptyBox?.classList.remove("hidden");
             if (pagination.total === 0) {
                 paginationNav?.classList.add("hidden");
@@ -317,7 +355,9 @@ import Layout from "../layouts/Layout.astro";
 
         emptyBox?.classList.add("hidden");
         paginationNav?.classList.remove("hidden");
-        grid.innerHTML = items.map(renderCard).join("");
+        grid.innerHTML = items
+            .map((p) => renderCard(p, isShopAdmin))
+            .join("");
     }
 
     function applyLocationToState() {
@@ -331,8 +371,44 @@ import Layout from "../layouts/Layout.astro";
 
     async function init() {
         applyLocationToState();
+        const authGw = tryCreateBrowserAuthGateway();
+        if (authGw) {
+            const session = await loadClientSession(authGw);
+            isShopAdmin = isAdminClientSession(session);
+        }
         await loadAndRender();
     }
+
+    grid?.addEventListener("click", async (e) => {
+        const target = e.target;
+        if (!(target instanceof Element)) {
+            return;
+        }
+        const btn = target.closest<HTMLButtonElement>("[data-shop-delete]");
+        if (!btn || !catalogGateway || !isShopAdmin) {
+            return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        const id = btn.dataset.shopDelete;
+        if (!id) {
+            return;
+        }
+        if (
+            !confirm(
+                "¿Eliminar este producto del catálogo activo? Se desactivará (baja lógica) y se archivará en Stripe.",
+            )
+        ) {
+            return;
+        }
+        const result = await deleteCatalogProduct(catalogGateway, id);
+        if (!result.ok) {
+            showListError(result.message);
+            return;
+        }
+        hideListError();
+        await loadAndRender();
+    });
 
     form?.addEventListener("submit", async (e) => {
         e.preventDefault();

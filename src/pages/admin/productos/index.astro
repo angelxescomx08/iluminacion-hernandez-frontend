@@ -105,54 +105,127 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
         <div
             class="bg-white border border-neutral-100 rounded-2xl overflow-hidden shadow-sm"
         >
-            <div class="overflow-x-auto">
-                <table class="table table-zebra">
-                    <thead
-                        class="bg-neutral-50 text-[10px] uppercase tracking-widest text-neutral-500"
+            <div id="admin-products-table-wrap">
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra">
+                        <thead
+                            class="bg-neutral-50 text-[10px] uppercase tracking-widest text-neutral-500"
+                        >
+                            <tr>
+                                <th>Título</th>
+                                <th>Slug</th>
+                                <th class="text-right">Precio</th>
+                                <th class="text-right">Stock</th>
+                                <th>Estado</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-products-tbody">
+                        </tbody>
+                    </table>
+                </div>
+                <div
+                    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-4 border-t border-neutral-100 bg-neutral-50/80"
+                >
+                    <p
+                        id="admin-pagination-summary"
+                        class="text-xs text-neutral-500 font-inter"
                     >
-                        <tr>
-                            <th>Título</th>
-                            <th>Slug</th>
-                            <th class="text-right">Precio</th>
-                            <th class="text-right">Stock</th>
-                            <th>Estado</th>
-                            <th class="text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-products-tbody">
-                    </tbody>
-                </table>
+                    </p>
+                    <div class="join">
+                        <button
+                            type="button"
+                            id="admin-page-prev"
+                            class="btn btn-sm join-item rounded-l-xl"
+                        >
+                            Anterior
+                        </button>
+                        <button
+                            type="button"
+                            id="admin-page-next"
+                            class="btn btn-sm join-item rounded-r-xl"
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+                </div>
             </div>
             <div
-                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-4 border-t border-neutral-100 bg-neutral-50/80"
+                id="admin-empty-catalog"
+                class="hidden text-center py-16 px-6 border-t border-neutral-100"
             >
-                <p
-                    id="admin-pagination-summary"
-                    class="text-xs text-neutral-500 font-inter"
-                >
+                <p class="font-montserrat font-bold text-neutral-800">
+                    No hay productos para mostrar
                 </p>
-                <div class="join">
+                <p class="text-sm text-neutral-500 mt-2 font-inter max-w-md mx-auto">
+                    Si acabas de eliminar o archivar productos, el listado puede quedar
+                    vacío. Crea uno nuevo o cambia la búsqueda y el filtro de
+                    inactivos.
+                </p>
+                <a
+                    href="/admin/productos/nuevo"
+                    class="btn btn-neutral rounded-xl text-white font-montserrat font-bold tracking-widest text-[11px] h-11 px-6 hover:bg-amber-600 mt-6"
+                >
+                    Nuevo producto
+                </a>
+            </div>
+        </div>
+
+        <dialog
+            id="delete-product-modal"
+            class="modal modal-middle"
+            aria-labelledby="delete-product-modal-title"
+        >
+            <div
+                class="modal-box rounded-2xl border border-neutral-200 bg-white shadow-2xl max-w-md w-[calc(100%-2rem)] p-6 sm:p-8"
+            >
+                <h3
+                    id="delete-product-modal-title"
+                    class="font-montserrat font-bold text-lg text-neutral-900 tracking-tight"
+                >
+                    Eliminar producto
+                </h3>
+                <p
+                    class="mt-3 text-sm text-neutral-600 font-inter leading-relaxed"
+                >
+                    ¿Eliminar este producto del catálogo activo? Se desactivará
+                    (baja lógica) y se archivará en Stripe.
+                </p>
+                <div
+                    class="modal-action mt-6 flex-col-reverse sm:flex-row gap-2 sm:justify-end"
+                >
+                    <form method="dialog" class="w-full sm:w-auto m-0">
+                        <button
+                            type="submit"
+                            class="btn btn-outline border-neutral-200 text-neutral-700 rounded-xl h-11 min-h-11 w-full sm:w-auto font-inter font-semibold"
+                        >
+                            Cancelar
+                        </button>
+                    </form>
                     <button
                         type="button"
-                        id="admin-page-prev"
-                        class="btn btn-sm join-item rounded-l-xl"
+                        id="delete-product-confirm"
+                        class="btn btn-error rounded-xl h-11 min-h-11 w-full sm:w-auto text-white font-montserrat font-bold tracking-widest text-[11px] px-6"
                     >
-                        Anterior
-                    </button>
-                    <button
-                        type="button"
-                        id="admin-page-next"
-                        class="btn btn-sm join-item rounded-r-xl"
-                    >
-                        Siguiente
+                        Eliminar
                     </button>
                 </div>
             </div>
-        </div>
+            <form method="dialog" class="modal-backdrop bg-neutral-900/50">
+                <button
+                    type="submit"
+                    class="cursor-default min-h-full w-full opacity-0"
+                    aria-label="Cerrar"
+                >
+                    close
+                </button>
+            </form>
+        </dialog>
     </div>
 </AdminLayout>
 
 <script>
+    import { deleteCatalogProduct } from "../../../catalog/application/delete-catalog-product.use-case";
     import { bootAdminCatalogPage } from "../../../catalog/client/boot-admin-catalog-page";
     import type { CatalogProduct } from "../../../catalog/domain/product";
     import type { ProductsGatewayPort } from "../../../catalog/ports/products-gateway.port";
@@ -170,8 +243,15 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
     );
     const btnPrev = document.getElementById("admin-page-prev");
     const btnNext = document.getElementById("admin-page-next");
+    const tableWrap = document.getElementById("admin-products-table-wrap");
+    const emptyCatalog = document.getElementById("admin-empty-catalog");
+    const deleteProductModal = document.getElementById("delete-product-modal");
+    const deleteProductConfirm = document.getElementById(
+        "delete-product-confirm",
+    );
 
     let page = 1;
+    let pendingDeleteProductId: string | null = null;
     const pageSize = 10;
 
     function showListError(message: string) {
@@ -198,16 +278,6 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
             return;
         }
         tbody.innerHTML = "";
-        if (items.length === 0) {
-            const tr = document.createElement("tr");
-            const td = document.createElement("td");
-            td.colSpan = 6;
-            td.className = "text-center text-sm text-neutral-500 py-10";
-            td.textContent = "No hay productos para esta vista.";
-            tr.appendChild(td);
-            tbody.appendChild(tr);
-            return;
-        }
         for (const p of items) {
             const tr = document.createElement("tr");
             tr.innerHTML = `
@@ -218,35 +288,26 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
         <td>${p.isActive ? '<span class="badge badge-success badge-sm">Activo</span>' : '<span class="badge badge-ghost badge-sm">Inactivo</span>'}</td>
         <td class="text-right space-x-1 whitespace-nowrap">
           <a class="btn btn-ghost btn-xs rounded-lg" href="/admin/productos/editar?id=${encodeURIComponent(p.id)}">Editar</a>
-          <button type="button" class="btn btn-ghost btn-xs text-error rounded-lg" data-archive="${encodeURIComponent(p.id)}">Archivar</button>
+          <button type="button" class="btn btn-ghost btn-xs text-error rounded-lg" data-delete-product="${encodeURIComponent(p.id)}">Eliminar</button>
         </td>`;
             tbody.appendChild(tr);
         }
 
-        tbody.querySelectorAll<HTMLButtonElement>("button[data-archive]").forEach(
-            (btn) => {
-                btn.addEventListener("click", async () => {
-                    const id = btn.dataset.archive;
-                    if (!id) {
-                        return;
-                    }
-                    if (
-                        !confirm(
-                            "¿Archivar este producto? Se desactivará en catálogo y en Stripe.",
-                        )
-                    ) {
-                        return;
-                    }
-                    const result = await catalogGateway.remove(id);
-                    if (!result.ok) {
-                        showListError(result.message);
-                        return;
-                    }
-                    hideListError();
-                    await loadPage();
-                });
-            },
-        );
+        tbody.querySelectorAll<HTMLButtonElement>(
+            "button[data-delete-product]",
+        ).forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const id = btn.dataset.deleteProduct;
+                if (!id) {
+                    return;
+                }
+                pendingDeleteProductId = id;
+                hideListError();
+                if (deleteProductModal instanceof HTMLDialogElement) {
+                    deleteProductModal.showModal();
+                }
+            });
+        });
     }
 
     function escapeHtml(s: string): string {
@@ -278,10 +339,22 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
             if (tbody) {
                 tbody.innerHTML = "";
             }
+            tableWrap?.classList.remove("hidden");
+            emptyCatalog?.classList.add("hidden");
             return;
         }
         const { items, pagination } = result.data;
-        renderRows(items);
+        if (items.length === 0) {
+            if (tbody) {
+                tbody.innerHTML = "";
+            }
+            tableWrap?.classList.add("hidden");
+            emptyCatalog?.classList.remove("hidden");
+        } else {
+            tableWrap?.classList.remove("hidden");
+            emptyCatalog?.classList.add("hidden");
+            renderRows(items);
+        }
         if (summary) {
             summary.textContent = `Página ${pagination.page} de ${pagination.totalPages} · ${pagination.total} productos`;
         }
@@ -321,6 +394,41 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
         btnNext?.addEventListener("click", () => {
             page += 1;
             void loadPage();
+        });
+
+        deleteProductModal?.addEventListener("close", () => {
+            pendingDeleteProductId = null;
+            if (deleteProductConfirm instanceof HTMLButtonElement) {
+                deleteProductConfirm.disabled = false;
+                deleteProductConfirm.classList.remove("btn-loading");
+            }
+        });
+
+        deleteProductConfirm?.addEventListener("click", async () => {
+            const id = pendingDeleteProductId;
+            if (
+                !id ||
+                !(deleteProductModal instanceof HTMLDialogElement) ||
+                !(deleteProductConfirm instanceof HTMLButtonElement)
+            ) {
+                return;
+            }
+            deleteProductConfirm.disabled = true;
+            deleteProductConfirm.classList.add("btn-loading");
+            try {
+                hideListError();
+                const result = await deleteCatalogProduct(catalogGateway, id);
+                if (!result.ok) {
+                    showListError(result.message);
+                    deleteProductModal.close();
+                    return;
+                }
+                deleteProductModal.close();
+                await loadPage();
+            } finally {
+                deleteProductConfirm.disabled = false;
+                deleteProductConfirm.classList.remove("btn-loading");
+            }
         });
 
         await loadPage();
