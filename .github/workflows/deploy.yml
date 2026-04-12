@@ -10,9 +10,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 9
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -22,7 +22,7 @@ jobs:
 
       - name: Build Project
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
           pnpm run build
         env:
           PUBLIC_API_URL: https://api.iluminacion-hernandez.com
@@ -36,7 +36,7 @@ jobs:
           source: "dist,package.json,pnpm-lock.yaml"
           target: "~/apps/frontend"
 
-      - name: Restart App on EC2
+      - name: Restart App
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -44,6 +44,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/apps/frontend
-            pnpm install --prod
+            pnpm install --prod --no-frozen-lockfile
             pm2 restart astro-front || PORT=4321 pm2 start dist/server/entry.mjs --name "astro-front"
             pm2 save
