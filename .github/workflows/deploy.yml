@@ -20,9 +20,11 @@ jobs:
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
           ssh -i ~/.ssh/id_rsa -o ConnectTimeout=10 ec2-user@${{ secrets.EC2_HOST }} "echo '✅ CONEXIÓN OK' && node -v"
 
-      # 2. CONFIGURACIÓN DEL RUNNER (GITHUB)
+      # 2. CONFIGURACIÓN DE PNPM (CORREGIDO)
       - name: Install pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 10 # Especificamos la versión mayor 10
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -30,13 +32,12 @@ jobs:
           node-version: 24
           cache: 'pnpm'
 
-      # 3. CONSTRUCCIÓN (Aquí es donde se usa 'sharp' que instalaste)
+      # 3. CONSTRUCCIÓN
       - name: Build Project
         run: |
           pnpm install --no-frozen-lockfile
           pnpm run build
         env:
-          # Si tienes variables de entorno para el cliente, ponlas aquí
           PUBLIC_API_URL: https://api.iluminacion-hernandez.com
 
       # 4. EMPAQUETADO Y ENVÍO
@@ -44,10 +45,10 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
-          # Astro genera todo en la carpeta 'dist'
+          # Astro genera el build en 'dist'
           tar -czf deploy_frontend.tar.gz dist package.json pnpm-lock.yaml
           
-          # Subimos a la carpeta del frontend
+          # Subimos a la carpeta del frontend en ec2-user
           scp -i ~/.ssh/id_rsa deploy_frontend.tar.gz ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/apps/frontend/
 
       # 5. COMANDOS REMOTOS
@@ -56,22 +57,21 @@ jobs:
           SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
           ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
-            # Cargamos el entorno del usuario ec2-user
+            # Cargamos el PATH de ec2-user
             export PNPM_HOME="/home/ec2-user/.local/share/pnpm"
             export PATH="$PNPM_HOME:$PATH"
             
             cd /home/ec2-user/apps/frontend
             
-            # Limpiamos y extraemos
+            # Extraer y limpiar
             tar -xzf deploy_frontend.tar.gz
             rm deploy_frontend.tar.gz
             
-            # Instalamos dependencias de producción (incluye sharp si es necesario en runtime)
+            # Instalar dependencias de producción
             pnpm install --prod --no-frozen-lockfile
             
-            echo "--- Reiniciando Frontend con PM2 ---"
-            # Astro con el adaptador de Node suele arrancar desde dist/server/entry.mjs
-            # Ajustamos el puerto a 4321 que es el estándar de Astro
+            echo "--- Reiniciando Astro con PM2 ---"
+            # Astro con adaptador Node usa dist/server/entry.mjs
             pm2 restart astro-front || PORT=4321 pm2 start dist/server/entry.mjs --name "astro-front"
             
             pm2 save
