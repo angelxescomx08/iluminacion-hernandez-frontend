@@ -1,23 +1,37 @@
 ---
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import SeoHead from "../seo/presentation/SeoHead.astro";
 import "../styles/global.css";
 
 interface Props {
     title?: string;
+    description?: string;
 }
 
-const { title = "Administración — Iluminación Hernández" } = Astro.props;
+const {
+    title = "Administración — Iluminación Hernández",
+    description = "Panel de administración del catálogo. No indexar.",
+} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="es" data-theme="light">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
         <title>{title}</title>
+        <SeoHead
+            title={title}
+            description={description}
+            noIndex={true}
+            jsonLd={[]}
+        />
     </head>
     <body class="font-inter bg-neutral-50 min-h-screen">
         <Header />

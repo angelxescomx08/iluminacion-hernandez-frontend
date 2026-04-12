@@ -1,23 +1,67 @@
 ---
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import {
+    buildOrganizationJsonLd,
+    buildWebSiteJsonLd,
+} from "../seo/application/build-organization-json-ld";
+import SeoHead from "../seo/presentation/SeoHead.astro";
+import { SITE_DEFAULT_DESCRIPTION } from "../seo/domain/site-identity";
 import "../styles/global.css";
 
 interface Props {
     title?: string;
+    description?: string;
+    ogImage?: string | null;
+    ogType?: string;
+    noIndex?: boolean;
+    /** JSON-LD extra (p. ej. Product, LocalBusiness); en páginas públicas se añade Organization + WebSite */
+    jsonLdExtra?: unknown[];
+    /** Solo inicio: SearchAction hacia /tienda */
+    webSiteSearchAction?: boolean;
 }
 
-const { title = "Iluminación Hernández" } = Astro.props;
+const {
+    title = "Iluminación Hernández",
+    description = SITE_DEFAULT_DESCRIPTION,
+    ogImage = null,
+    ogType = "website",
+    noIndex = false,
+    jsonLdExtra = [],
+    webSiteSearchAction = false,
+} = Astro.props;
+
+const siteRootHref = new URL("/", Astro.site?.href ?? Astro.url.origin).href;
+const defaultJsonLd = noIndex
+    ? []
+    : [
+          buildOrganizationJsonLd(siteRootHref),
+          buildWebSiteJsonLd(siteRootHref, {
+              withSiteSearch: webSiteSearchAction,
+          }),
+      ];
+const jsonLd = [...defaultJsonLd, ...jsonLdExtra];
 ---
 
 <!doctype html>
 <html lang="es" data-theme="light">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
         <title>{title}</title>
+        <SeoHead
+            title={title}
+            description={description}
+            ogImage={ogImage}
+            ogType={ogType}
+            noIndex={noIndex}
+            jsonLd={jsonLd}
+        />
     </head>
     <body class="font-inter">
         <Header />

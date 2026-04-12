@@ -2,6 +2,10 @@
 export const prerender = true;
 
 import Layout from "../layouts/Layout.astro";
+import { buildLocalBusinessJsonLd } from "../seo/application/build-local-business-json-ld";
+
+const siteRootHref = new URL("/", Astro.site?.href ?? Astro.url.origin).href;
+const jsonLdExtra = [buildLocalBusinessJsonLd(siteRootHref)];
 
 const addressLines = [
     "Victoria 31, Pasillo de acceso centro",
@@ -16,7 +20,11 @@ const mapsHref = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
 const mapsEmbedSrc = `https://maps.google.com/maps?q=${mapsQuery}&hl=es&z=17&output=embed`;
 ---
 
-<Layout title="Sucursales | Iluminación Hernández">
+<Layout
+    title="Sucursales | Iluminación Hernández"
+    description="Sucursal Iluminación Hernández en Victoria 31, Cuauhtémoc, CDMX. Cómo llegar, mapa y horarios de contacto."
+    jsonLdExtra={jsonLdExtra}
+>
     <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-12 px-6">
         <div class="max-w-5xl mx-auto">
             <div class="mb-10 border-l-4 border-amber-500 pl-6">

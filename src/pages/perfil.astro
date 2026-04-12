@@ -4,7 +4,11 @@ export const prerender = true;
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Mi perfil | Iluminación Hernández">
+<Layout
+    title="Mi perfil | Iluminación Hernández"
+    description="Datos de tu cuenta en Iluminación Hernández."
+    noIndex={true}
+>
     <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-12 px-6">
         <div class="max-w-lg mx-auto space-y-8">
             <div class="border-l-4 border-amber-500 pl-6">

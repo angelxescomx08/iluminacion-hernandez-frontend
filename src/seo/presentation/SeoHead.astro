@@ -1,0 +1,58 @@
+---
+import { formatMetaDescription } from "../application/format-meta-description";
+import { resolveCanonicalUrl } from "../application/resolve-canonical-url";
+import { toAbsoluteUrl } from "../application/to-absolute-url";
+import type { PageSeoInput } from "../domain/page-seo";
+import { SITE_DEFAULT_DESCRIPTION } from "../domain/site-identity";
+
+interface Props extends PageSeoInput {
+    /** Bloques JSON-LD adicionales (Organization, Product, etc.) */
+    jsonLd?: unknown[];
+}
+
+const {
+    title,
+    description: rawDescription,
+    ogImage,
+    noIndex = false,
+    ogType = "website",
+    jsonLd = [],
+} = Astro.props as Props;
+
+const description = formatMetaDescription(rawDescription ?? SITE_DEFAULT_DESCRIPTION);
+const siteOrigin = Astro.site?.origin;
+const canonicalUrl = resolveCanonicalUrl(siteOrigin, Astro.url);
+const ogImageAbsolute = toAbsoluteUrl(
+    siteOrigin,
+    Astro.url.origin,
+    ogImage ?? null,
+);
+const robotsContent = noIndex ? "noindex, nofollow" : "index, follow";
+const jsonLdPayload = jsonLd.length > 0 ? jsonLd : null;
+---
+
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+<meta name="robots" content={robotsContent} />
+<meta property="og:type" content={ogType} />
+<meta property="og:locale" content="es_MX" />
+<meta property="og:site_name" content="Iluminación Hernández" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+{ogImageAbsolute && <meta property="og:image" content={ogImageAbsolute} />}
+<meta name="twitter:card" content={ogImageAbsolute ? "summary_large_image" : "summary"} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{ogImageAbsolute && <meta name="twitter:image" content={ogImageAbsolute} />}
+{
+    jsonLdPayload && (
+        <script
+            is:inline
+            type="application/ld+json"
+            set:html={JSON.stringify(
+                jsonLdPayload.length === 1 ? jsonLdPayload[0] : jsonLdPayload,
+            )}
+        />
+    )
+}

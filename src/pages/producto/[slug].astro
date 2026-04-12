@@ -3,6 +3,9 @@ import Layout from "../../layouts/Layout.astro";
 import TruncatableText from "../../components/TruncatableText.astro";
 import { loadPublicProductBySlug } from "../../catalog/application/load-public-product-by-slug.use-case";
 import { createHttpProductsGateway } from "../../catalog/adapters/http-products-gateway";
+import { buildProductJsonLd } from "../../seo/application/build-product-json-ld";
+import { resolveCanonicalUrl } from "../../seo/application/resolve-canonical-url";
+import type { ProductSeoSnapshot } from "../../seo/domain/product-seo-snapshot";
 
 /** SSR con adaptador Node: HTML del producto se genera en cada petición desde el API. */
 export const prerender = false;
@@ -39,9 +42,34 @@ const priceLabel = `$${product.price.toLocaleString("es-MX", {
 })}`;
 
 const pageTitle = `${product.title} | Iluminación Hernández`;
+const pageDescription =
+    product.description?.trim() ??
+    `${product.title}: iluminación y lámparas en CDMX. Precio ${priceLabel}.`;
+const pageCanonical = resolveCanonicalUrl(Astro.site?.origin, Astro.url);
+const productSeo: ProductSeoSnapshot = {
+    id: product.id,
+    title: product.title,
+    slug: product.slug,
+    description: product.description,
+    price: product.price,
+    stock: product.stock,
+    imageUrl: mainImage,
+};
+const productJsonLd = buildProductJsonLd(
+    productSeo,
+    pageCanonical,
+    Astro.site?.origin,
+    Astro.url.origin,
+);
 ---
 
-<Layout title={pageTitle}>
+<Layout
+    title={pageTitle}
+    description={pageDescription}
+    ogImage={mainImage}
+    ogType="product"
+    jsonLdExtra={[productJsonLd]}
+>
     <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-10 md:py-14 px-4 sm:px-6">
         <div class="max-w-5xl mx-auto">
             <nav class="text-xs font-inter text-neutral-500 mb-8">
