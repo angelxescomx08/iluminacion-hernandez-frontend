@@ -2,6 +2,51 @@
 @plugin "daisyui";
 @import "./fonts.css";
 
+/* Enlace "Saltar al contenido" (WCAG 2.4.1) */
+.skip-link {
+    position: absolute;
+    left: 0.75rem;
+    top: 0.75rem;
+    z-index: 200;
+    padding: 0.65rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #fff;
+    background-color: #171717;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transform: translateY(-200%);
+    transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+    outline: none;
+}
+
+.skip-link:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid #f59e0b;
+    outline-offset: 3px;
+}
+
+/* Foco visible y contenido no oculto bajo cabecera fija al enfocar anclas */
+#contenido-principal {
+    scroll-margin-top: 5.5rem;
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+    outline: 2px solid #d97706;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skip-link {
+        transition: none;
+    }
+}
+
 /* Tooltips largos (texto dinámico): DaisyUI usa el pseudo-elemento del contenedor. */
 @layer components {
     .ih-dynamic-tip::before {

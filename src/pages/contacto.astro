@@ -8,7 +8,7 @@ import Layout from "../layouts/Layout.astro";
     title="Contacto | Iluminación Hernández"
     description="WhatsApp, teléfono y correo de Iluminación Hernández. Visítanos en Victoria 31, Cuauhtémoc, Ciudad de México."
 >
-    <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-12 px-6">
+    <main id="contenido-principal" tabindex="-1" class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-12 px-6">
         <div class="max-w-6xl mx-auto">
             <div class="mb-12 border-l-4 border-amber-500 pl-6">
                 <h1
@@ -34,31 +34,37 @@ import Layout from "../layouts/Layout.astro";
                             Envíanos un mensaje
                         </h2>
 
-                        <form class="space-y-5">
+                        <form class="space-y-5" aria-label="Formulario de contacto">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div class="form-control w-full">
-                                    <label class="label pb-1.5">
+                                    <label class="label pb-1.5" for="contacto-nombre">
                                         <span
                                             class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
                                             >Nombre completo</span
                                         >
                                     </label>
                                     <input
+                                        id="contacto-nombre"
+                                        name="nombre"
                                         type="text"
+                                        autocomplete="name"
                                         placeholder="Ej. Juan Pérez"
                                         class="input input-bordered h-11 bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full text-sm font-inter"
                                         required
                                     />
                                 </div>
                                 <div class="form-control w-full">
-                                    <label class="label pb-1.5">
+                                    <label class="label pb-1.5" for="contacto-telefono">
                                         <span
                                             class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
                                             >Teléfono Celular</span
                                         >
                                     </label>
                                     <input
+                                        id="contacto-telefono"
+                                        name="telefono"
                                         type="tel"
+                                        autocomplete="tel"
                                         placeholder="55 0000 0000"
                                         class="input input-bordered h-11 bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full text-sm font-inter"
                                         required
@@ -67,14 +73,17 @@ import Layout from "../layouts/Layout.astro";
                             </div>
 
                             <div class="form-control w-full">
-                                <label class="label pb-1.5">
+                                <label class="label pb-1.5" for="contacto-email">
                                     <span
                                         class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
                                         >Correo electrónico</span
                                     >
                                 </label>
                                 <input
+                                    id="contacto-email"
+                                    name="email"
                                     type="email"
+                                    autocomplete="email"
                                     placeholder="contacto@ejemplo.com"
                                     class="input input-bordered h-11 bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full text-sm font-inter"
                                     required
@@ -82,19 +91,22 @@ import Layout from "../layouts/Layout.astro";
                             </div>
 
                             <div class="form-control w-full">
-                                <label class="label pb-1.5">
+                                <label class="label pb-1.5" for="contacto-mensaje">
                                     <span
                                         class="label-text font-bold text-neutral-400 uppercase tracking-widest text-[10px]"
                                         >¿Cómo podemos ayudarte?</span
                                     >
                                 </label>
                                 <textarea
+                                    id="contacto-mensaje"
+                                    name="mensaje"
                                     class="textarea textarea-bordered bg-neutral-50 border-neutral-200 focus:outline-amber-500/50 w-full h-32 text-sm font-inter resize-none"
                                     placeholder="Escribe tu mensaje..."
                                 ></textarea>
                             </div>
 
                             <button
+                                type="submit"
                                 class="btn btn-neutral btn-block h-12 rounded-xl text-white font-montserrat font-bold tracking-widest text-[11px] shadow-md hover:bg-amber-600 transition-all active:scale-[0.98]"
                             >
                                 ENVIAR MENSAJE
@@ -113,7 +125,7 @@ import Layout from "../layouts/Layout.astro";
 
                         <div class="space-y-8">
                             <div class="flex items-start gap-4">
-                                <div class="shrink-0 text-amber-500 mt-1">
+                                <div class="shrink-0 text-amber-500 mt-1" aria-hidden="true">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="w-5 h-5"
@@ -148,7 +160,7 @@ import Layout from "../layouts/Layout.astro";
                             </div>
 
                             <div class="flex items-start gap-4">
-                                <div class="shrink-0 text-green-600 mt-1">
+                                <div class="shrink-0 text-green-600 mt-1" aria-hidden="true">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="w-5 h-5"
@@ -174,7 +186,7 @@ import Layout from "../layouts/Layout.astro";
                             </div>
 
                             <div class="flex items-start gap-4">
-                                <div class="shrink-0 text-neutral-400 mt-1">
+                                <div class="shrink-0 text-neutral-400 mt-1" aria-hidden="true">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="w-5 h-5"
@@ -207,7 +219,7 @@ import Layout from "../layouts/Layout.astro";
                             </div>
 
                             <div class="flex items-start gap-4">
-                                <div class="shrink-0 text-neutral-400 mt-1">
+                                <div class="shrink-0 text-neutral-400 mt-1" aria-hidden="true">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="w-5 h-5"
@@ -248,6 +260,8 @@ import Layout from "../layouts/Layout.astro";
                             <a
                                 href="https://www.facebook.com/profile.php?id=61585753828406"
                                 target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Facebook de Iluminación Hernández (se abre en una pestaña nueva)"
                                 class="btn btn-ghost btn-circle bg-neutral-50 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
                             >
                                 <svg
@@ -260,6 +274,7 @@ import Layout from "../layouts/Layout.astro";
                                     stroke-width="1.5"
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
+                                    aria-hidden="true"
                                     ><path
                                         d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
                                     ></path></svg
@@ -268,6 +283,8 @@ import Layout from "../layouts/Layout.astro";
                             <a
                                 href="https://www.instagram.com/iluminacion_hernandez/"
                                 target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Instagram de Iluminación Hernández (se abre en una pestaña nueva)"
                                 class="btn btn-ghost btn-circle bg-neutral-50 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
                             >
                                 <svg
@@ -280,6 +297,7 @@ import Layout from "../layouts/Layout.astro";
                                     stroke-width="1.5"
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
+                                    aria-hidden="true"
                                     ><rect
                                         x="2"
                                         y="2"
@@ -298,6 +316,8 @@ import Layout from "../layouts/Layout.astro";
                             <a
                                 href="https://www.tiktok.com/@iluminacin.hernnde"
                                 target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="TikTok de Iluminación Hernández (se abre en una pestaña nueva)"
                                 class="btn btn-ghost btn-circle bg-neutral-50 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
                             >
                                 <svg
@@ -310,6 +330,7 @@ import Layout from "../layouts/Layout.astro";
                                     stroke-width="1.5"
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
+                                    aria-hidden="true"
                                     ><path
                                         d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"
                                     ></path></svg

@@ -8,7 +8,7 @@ import Layout from "../layouts/Layout.astro";
     title="Tienda | Iluminación Hernández"
     description="Catálogo de lámparas e iluminación decorativa. Busca por nombre o descripción y compra en Iluminación Hernández, CDMX."
 >
-    <main class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-10 md:py-14 px-4 sm:px-6">
+    <main id="contenido-principal" tabindex="-1" class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-10 md:py-14 px-4 sm:px-6">
         <div class="max-w-7xl mx-auto">
             <div
                 id="shop-env-alert"
@@ -42,6 +42,8 @@ import Layout from "../layouts/Layout.astro";
             <div
                 id="shop-loading"
                 class="flex flex-col items-center justify-center py-24 gap-4"
+                aria-live="polite"
+                aria-busy="true"
             >
                 <span
                     class="loading loading-spinner loading-lg text-amber-600"
@@ -297,8 +299,11 @@ import Layout from "../layouts/Layout.astro";
         const gateway = catalogGateway ?? bootShopCatalogPage();
         if (gateway === "env") {
             envAlert?.classList.remove("hidden");
-            loading?.classList.add("hidden");
-            return;
+        loading?.classList.add("hidden");
+        if (loading instanceof HTMLElement) {
+            loading.removeAttribute("aria-busy");
+        }
+        return;
         }
         catalogGateway = gateway;
 
@@ -312,6 +317,9 @@ import Layout from "../layouts/Layout.astro";
         });
 
         loading?.classList.add("hidden");
+        if (loading instanceof HTMLElement) {
+            loading.removeAttribute("aria-busy");
+        }
         shell?.classList.remove("hidden");
 
         if (!result.ok) {

@@ -12,7 +12,10 @@ import {
 const MARQUEE_SEGMENTS = [0, 1] as const;
 ---
 
-<section class="py-12 bg-white overflow-hidden">
+<section
+    class="py-12 bg-white overflow-hidden"
+    aria-label="Galería decorativa de ambientes iluminados"
+>
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="text-center mb-16">
             <h2
@@ -41,7 +44,7 @@ const MARQUEE_SEGMENTS = [0, 1] as const;
                                         <div class="item aspect-3/4">
                                             <Picture
                                                 src={img}
-                                                alt="Luz"
+                                                alt=""
                                                 formats={["avif", "webp"]}
                                                 widths={[400]}
                                                 class="w-full h-full object-cover rounded-3xl"
@@ -69,7 +72,7 @@ const MARQUEE_SEGMENTS = [0, 1] as const;
                                         <div class="item aspect-square">
                                             <Picture
                                                 src={img}
-                                                alt="Luz"
+                                                alt=""
                                                 formats={["avif", "webp"]}
                                                 widths={[400]}
                                                 class="w-full h-full object-cover rounded-3xl"
@@ -97,7 +100,7 @@ const MARQUEE_SEGMENTS = [0, 1] as const;
                                         <div class="item aspect-4/5">
                                             <Picture
                                                 src={img}
-                                                alt="Luz"
+                                                alt=""
                                                 formats={["avif", "webp"]}
                                                 widths={[400]}
                                                 class="w-full h-full object-cover rounded-3xl"
@@ -125,7 +128,7 @@ const MARQUEE_SEGMENTS = [0, 1] as const;
                                         <div class="item aspect-2/3">
                                             <Picture
                                                 src={img}
-                                                alt="Luz"
+                                                alt=""
                                                 formats={["avif", "webp"]}
                                                 widths={[400]}
                                                 class="w-full h-full object-cover rounded-3xl"
@@ -207,6 +210,14 @@ const MARQUEE_SEGMENTS = [0, 1] as const;
 
     .scroll-column:hover .scroll-content {
         animation-play-state: running;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .up .scroll-content,
+        .down .scroll-content {
+            animation: none;
+            transform: none;
+        }
     }
 </style>
 

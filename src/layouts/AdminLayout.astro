@@ -34,8 +34,9 @@ const {
         />
     </head>
     <body class="font-inter bg-neutral-50 min-h-screen">
+        <a class="skip-link" href="#contenido-principal">Saltar al contenido principal</a>
         <Header />
-        <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 pb-20">
+        <main id="contenido-principal" tabindex="-1" class="max-w-6xl mx-auto px-4 sm:px-6 py-10 pb-20">
             <slot />
         </main>
         <Footer />

@@ -25,10 +25,17 @@ import imgCool from "../assets/images/light-experience/fria.webp";
           </h3>
         </div>
 
-        <div class="grid gap-3 lg:gap-4 max-w-xl mx-auto lg:ml-0">
+        <div
+          class="grid gap-3 lg:gap-4 max-w-xl mx-auto lg:ml-0"
+          role="group"
+          aria-label="Temperatura de luz"
+        >
           <button
+            type="button"
             class="btn-temp active-warm group p-4 sm:p-5 text-left border-2 rounded-2xl transition-all duration-300"
             data-target="warm"
+            aria-pressed="true"
+            aria-controls="display-warm"
           >
             <div class="flex justify-between items-center mb-1 lg:mb-2">
               <span
@@ -47,8 +54,11 @@ import imgCool from "../assets/images/light-experience/fria.webp";
           </button>
 
           <button
+            type="button"
             class="btn-temp group p-4 sm:p-5 text-left border-2 border-neutral-100 rounded-2xl transition-all duration-300"
             data-target="neutral"
+            aria-pressed="false"
+            aria-controls="display-neutral"
           >
             <div class="flex justify-between items-center mb-1 lg:mb-2">
               <span
@@ -63,8 +73,11 @@ import imgCool from "../assets/images/light-experience/fria.webp";
           </button>
 
           <button
+            type="button"
             class="btn-temp group p-4 sm:p-5 text-left border-2 border-neutral-100 rounded-2xl transition-all duration-300"
             data-target="cool"
+            aria-pressed="false"
+            aria-controls="display-cool"
           >
             <div class="flex justify-between items-center mb-1 lg:mb-2">
               <span
@@ -83,8 +96,10 @@ import imgCool from "../assets/images/light-experience/fria.webp";
       <div class="w-full lg:w-1/2 order-2 lg:order-1">
         <div
           class="relative aspect-4/3 sm:aspect-video lg:aspect-4/3 rounded-3xl overflow-hidden shadow-2xl border border-neutral-50 bg-neutral-100"
+          role="region"
+          aria-label="Vista previa de la temperatura de luz seleccionada"
         >
-          <div id="display-warm" class="temp-img active">
+          <div id="display-warm" class="temp-img active" aria-hidden="false">
             <Picture
               src={imgWarm}
               alt="Luz Cálida"
@@ -96,7 +111,7 @@ import imgCool from "../assets/images/light-experience/fria.webp";
               inferSize={true}
             />
           </div>
-          <div id="display-neutral" class="temp-img">
+          <div id="display-neutral" class="temp-img" aria-hidden="true">
             <Picture
               src={imgNeutral}
               alt="Luz Neutra"
@@ -108,7 +123,7 @@ import imgCool from "../assets/images/light-experience/fria.webp";
               inferSize={true}
             />
           </div>
-          <div id="display-cool" class="temp-img">
+          <div id="display-cool" class="temp-img" aria-hidden="true">
             <Picture
               src={imgCool}
               alt="Luz Fría"
@@ -179,12 +194,24 @@ import imgCool from "../assets/images/light-experience/fria.webp";
         buttons.forEach((b) => {
           b.classList.remove("active-warm", "active-neutral", "active-cool");
           b.classList.add("border-neutral-100");
+          if (b instanceof HTMLButtonElement) {
+            b.setAttribute("aria-pressed", "false");
+          }
         });
-        imageContainers.forEach((img) => img.classList.remove("active"));
+        imageContainers.forEach((img) => {
+          img.classList.remove("active");
+          img.setAttribute("aria-hidden", "true");
+        });
         btn.classList.remove("border-neutral-100");
         btn.classList.add(`active-${target}`);
+        if (btn instanceof HTMLButtonElement) {
+          btn.setAttribute("aria-pressed", "true");
+        }
         const targetContainer = document.getElementById(`display-${target}`);
-        if (targetContainer) targetContainer.classList.add("active");
+        if (targetContainer) {
+          targetContainer.classList.add("active");
+          targetContainer.setAttribute("aria-hidden", "false");
+        }
       });
     });
   }
