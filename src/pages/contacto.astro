@@ -34,7 +34,36 @@ import Layout from "../layouts/Layout.astro";
                             Envíanos un mensaje
                         </h2>
 
-                        <form class="space-y-5" aria-label="Formulario de contacto">
+                        <div
+                            id="contacto-env-alert"
+                            class="alert alert-warning text-sm mb-6 hidden"
+                            role="alert"
+                        >
+                            Falta <code class="text-xs">PUBLIC_API_URL</code> en el
+                            entorno del front. Añade la URL base del API (por
+                            ejemplo <code class="text-xs">http://localhost:3000</code>).
+                        </div>
+
+                        <div
+                            id="contacto-error"
+                            class="alert alert-error text-sm mb-6 hidden min-w-0 max-w-full"
+                            role="alert"
+                        ></div>
+
+                        <div
+                            id="contacto-success"
+                            class="alert alert-success text-sm mb-6 hidden"
+                            role="status"
+                        >
+                            ¡Gracias! Tu mensaje fue enviado, te contactaremos
+                            pronto.
+                        </div>
+
+                        <form
+                            id="contacto-form"
+                            class="space-y-5"
+                            aria-label="Formulario de contacto"
+                        >
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div class="form-control w-full">
                                     <label class="label pb-1.5" for="contacto-nombre">
@@ -107,6 +136,7 @@ import Layout from "../layouts/Layout.astro";
 
                             <button
                                 type="submit"
+                                id="contacto-submit"
                                 class="btn btn-neutral btn-block h-12 rounded-xl text-white font-montserrat font-bold tracking-widest text-[11px] shadow-md hover:bg-amber-600 transition-all active:scale-[0.98]"
                             >
                                 ENVIAR MENSAJE
@@ -349,3 +379,84 @@ import Layout from "../layouts/Layout.astro";
         </div>
     </main>
 </Layout>
+
+<script>
+    import { tryCreateBrowserContactGateway } from "../contact/client/create-browser-contact-gateway";
+    import { sendContactMessage } from "../contact/application/send-contact-message.use-case";
+    import { applyTruncatableHints } from "../presentation/ui/truncatable-text";
+
+    const envAlert = document.getElementById("contacto-env-alert");
+    const errorBox = document.getElementById("contacto-error");
+    const successBox = document.getElementById("contacto-success");
+    const form = document.getElementById("contacto-form");
+    const submitBtn = document.getElementById("contacto-submit");
+
+    const gateway = tryCreateBrowserContactGateway();
+    if (!gateway && envAlert) {
+        envAlert.classList.remove("hidden");
+    }
+
+    function showError(message: string) {
+        if (!errorBox) return;
+        errorBox.textContent = message;
+        errorBox.classList.remove("hidden");
+        errorBox.classList.add("line-clamp-4", "break-words");
+        applyTruncatableHints(errorBox, message);
+    }
+
+    function hideError() {
+        if (!errorBox) return;
+        errorBox.classList.add("hidden");
+        errorBox.classList.remove("line-clamp-4", "break-words");
+        applyTruncatableHints(errorBox, "");
+    }
+
+    function hideSuccess() {
+        successBox?.classList.add("hidden");
+    }
+
+    function setLoading(loading: boolean) {
+        if (submitBtn instanceof HTMLButtonElement) {
+            submitBtn.disabled = loading;
+            submitBtn.classList.toggle("btn-loading", loading);
+        }
+    }
+
+    form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        hideError();
+        hideSuccess();
+        if (!gateway) {
+            showError("Configura PUBLIC_API_URL para enviar tu mensaje.");
+            return;
+        }
+        const nombreInput = document.getElementById("contacto-nombre");
+        const telefonoInput = document.getElementById("contacto-telefono");
+        const emailInput = document.getElementById("contacto-email");
+        const mensajeInput = document.getElementById("contacto-mensaje");
+        if (
+            !(nombreInput instanceof HTMLInputElement) ||
+            !(telefonoInput instanceof HTMLInputElement) ||
+            !(emailInput instanceof HTMLInputElement) ||
+            !(mensajeInput instanceof HTMLTextAreaElement)
+        ) {
+            return;
+        }
+        setLoading(true);
+        const result = await sendContactMessage(gateway, {
+            nombre: nombreInput.value,
+            telefono: telefonoInput.value,
+            email: emailInput.value,
+            mensaje: mensajeInput.value,
+        });
+        setLoading(false);
+        if (result.ok) {
+            successBox?.classList.remove("hidden");
+            if (form instanceof HTMLFormElement) {
+                form.reset();
+            }
+            return;
+        }
+        showError(result.message);
+    });
+</script>
