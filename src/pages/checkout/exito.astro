@@ -1,0 +1,36 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout
+    title="Pedido confirmado | Iluminación Hernández"
+    description="Confirmación de tu compra en Iluminación Hernández."
+    noIndex={true}
+>
+    <main
+        id="contenido-principal"
+        tabindex="-1"
+        class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-10 md:py-14 px-4 sm:px-6"
+    >
+        <div class="max-w-xl mx-auto space-y-6" data-success-root data-state="loading">
+            <div class="border-l-4 border-amber-500 pl-6">
+                <h1 class="text-2xl md:text-4xl font-montserrat font-black text-neutral-800 tracking-tight uppercase">
+                    Gracias por tu compra
+                </h1>
+                <p class="text-neutral-600 mt-3 font-inter text-sm" role="status" data-testid="order-status">
+                    Confirmando tu pago…
+                </p>
+            </div>
+            <div class="rounded-3xl border border-neutral-100 bg-white p-6 shadow-sm space-y-4" data-order-details></div>
+            <div class="flex gap-3">
+                <a href="/tienda" class="btn bg-neutral-900 text-white hover:bg-amber-600 border-none">Seguir comprando</a>
+                <a href="/perfil" class="btn btn-ghost">Mi cuenta</a>
+            </div>
+        </div>
+    </main>
+</Layout>
+
+<script>
+    import { bootSuccessPage } from "../../checkout/client/boot-success-page";
+    void bootSuccessPage();
+</script>

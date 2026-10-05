@@ -7,6 +7,8 @@ const publicSite = process.env.PUBLIC_SITE_URL?.trim() || 'https://iluminacion-h
 
 export default defineConfig({
   site: publicSite,
+  // Las pruebas E2E compilan en una carpeta aparte para no tocar tu `dist`.
+  ...(process.env.ASTRO_OUT_DIR ? { outDir: process.env.ASTRO_OUT_DIR } : {}),
   output: 'server',
   adapter: node({ 
     mode: 'standalone',

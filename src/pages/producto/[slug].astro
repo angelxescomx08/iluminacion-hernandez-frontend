@@ -196,6 +196,49 @@ const productJsonLd = buildProductJsonLd(
                         )
                     }
 
+                    {
+                        (product.stock ?? 0) > 0 ? (
+                            <section
+                                class="border-t border-neutral-100 pt-6 space-y-4"
+                                data-purchase
+                                data-product-id={product.id}
+                                data-slug={product.slug}
+                                data-title={product.title}
+                                data-price={String(product.price)}
+                                data-stock={String(product.stock ?? 0)}
+                                data-image={mainImage ?? ""}
+                            >
+                                <div class="flex items-center gap-3">
+                                    <label for="product-qty" class="text-xs font-bold uppercase tracking-widest text-neutral-400">Cantidad</label>
+                                    <input
+                                        id="product-qty"
+                                        type="number"
+                                        min="1"
+                                        max={Math.min(product.stock ?? 0, 10)}
+                                        value="1"
+                                        class="input input-bordered input-sm w-20"
+                                        data-testid="product-qty"
+                                    />
+                                </div>
+                                <div class="flex flex-wrap gap-3">
+                                    <button type="button" class="btn bg-neutral-900 text-white hover:bg-amber-600 border-none rounded-xl" data-testid="buy-now">
+                                        Comprar ahora
+                                    </button>
+                                    <button type="button" class="btn btn-outline border-neutral-300 rounded-xl" data-testid="add-to-cart">
+                                        Agregar al carrito
+                                    </button>
+                                </div>
+                                <p class="hidden text-sm font-inter text-emerald-700" role="status" data-testid="added-to-cart">
+                                    Agregado al carrito. <a href="/carrito" class="underline font-semibold">Ver carrito</a>
+                                </p>
+                            </section>
+                        ) : (
+                            <p class="border-t border-neutral-100 pt-6 text-sm font-semibold text-red-600" data-testid="out-of-stock">
+                                Agotado por ahora.
+                            </p>
+                        )
+                    }
+
                     <a
                         href="/tienda"
                         class="inline-flex btn btn-outline border-neutral-200 rounded-xl font-montserrat font-bold tracking-widest text-[11px]"
@@ -207,3 +250,8 @@ const productJsonLd = buildProductJsonLd(
         </div>
     </main>
 </Layout>
+
+<script>
+    import { bootProductPurchase } from "../../checkout/client/boot-product-purchase";
+    bootProductPurchase();
+</script>

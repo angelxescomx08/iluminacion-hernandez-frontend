@@ -135,8 +135,15 @@ const postLoginPath = Astro.url.searchParams.get("redirect") ?? "/";
     import { applyTruncatableHints } from "../../presentation/ui/truncatable-text";
 
     const cfg = document.getElementById("login-config");
+    const queryRedirect = new URLSearchParams(window.location.search).get("redirect");
+    // Solo rutas internas (evita redirecciones abiertas a otros sitios).
+    const safeQueryRedirect =
+        queryRedirect && queryRedirect.startsWith("/") && !queryRedirect.startsWith("//")
+            ? queryRedirect
+            : null;
     const redirectPath =
-        cfg instanceof HTMLElement ? cfg.dataset.redirect ?? "/" : "/";
+        safeQueryRedirect ??
+        (cfg instanceof HTMLElement ? cfg.dataset.redirect ?? "/" : "/");
 
     const envAlert = document.getElementById("login-env-alert");
     const errorBox = document.getElementById("login-error");

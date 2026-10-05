@@ -1,0 +1,80 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+    title="Carrito | Iluminación Hernández"
+    description="Revisa tu carrito y paga de forma segura con Stripe."
+    noIndex={true}
+>
+    <main
+        id="contenido-principal"
+        tabindex="-1"
+        class="bg-[#FDFDFD] min-h-[calc(100dvh-74px)] py-10 md:py-14 px-4 sm:px-6"
+    >
+        <div class="max-w-5xl mx-auto" data-cart-root>
+            <div class="mb-8 border-l-4 border-amber-500 pl-6">
+                <h1
+                    class="text-2xl md:text-4xl font-montserrat font-black text-neutral-800 tracking-tight uppercase"
+                    data-cart-title
+                >
+                    Tu carrito
+                </h1>
+                <p class="text-neutral-500 mt-2 font-inter text-sm">
+                    Pago seguro con tarjeta a través de Stripe.
+                </p>
+            </div>
+
+            <div role="status" class="alert alert-info mb-6 hidden" data-testid="checkout-notice"></div>
+            <div role="alert" class="alert alert-error mb-6 hidden" data-testid="checkout-error"></div>
+
+            <div class="hidden text-center py-16 space-y-4" data-testid="cart-empty">
+                <p class="font-inter text-neutral-500">Tu carrito está vacío.</p>
+                <a href="/tienda" class="btn bg-neutral-900 text-white hover:bg-amber-600 border-none">Ir a la tienda</a>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-[1fr_22rem] gap-10 hidden" data-cart-summary>
+                <ul class="min-w-0" data-cart-lines aria-label="Productos en el carrito"></ul>
+
+                <aside class="space-y-6 rounded-3xl border border-neutral-100 bg-white p-6 shadow-sm h-fit">
+                    <fieldset class="space-y-3">
+                        <legend class="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">Entrega</legend>
+                        <label class="flex gap-3 items-start cursor-pointer rounded-2xl border border-neutral-200 p-4 has-checked:border-amber-500">
+                            <input type="radio" name="fulfillment" value="shipping" class="radio radio-sm mt-0.5" checked data-testid="fulfillment-shipping" />
+                            <span class="font-inter text-sm">
+                                <span class="font-semibold text-neutral-800">Envío a domicilio</span>
+                                <span class="block text-neutral-500"><span data-shipping-price>$199.00</span> · <span data-shipping-estimate>3 a 7 días hábiles</span></span>
+                            </span>
+                        </label>
+                        <label class="flex gap-3 items-start cursor-pointer rounded-2xl border border-neutral-200 p-4 has-checked:border-amber-500">
+                            <input type="radio" name="fulfillment" value="pickup" class="radio radio-sm mt-0.5" data-testid="fulfillment-pickup" />
+                            <span class="font-inter text-sm">
+                                <span class="font-semibold text-neutral-800">Recoger en sucursal · Gratis</span>
+                                <span class="block text-neutral-500" data-pickup-branch>Sucursal Victoria 31</span>
+                            </span>
+                        </label>
+                    </fieldset>
+
+                    <dl class="font-inter text-sm space-y-2 border-t border-neutral-100 pt-4">
+                        <div class="flex justify-between"><dt class="text-neutral-500">Subtotal</dt><dd data-testid="cart-subtotal">$0.00</dd></div>
+                        <div class="flex justify-between"><dt class="text-neutral-500">Envío</dt><dd data-testid="cart-shipping">—</dd></div>
+                        <div class="flex justify-between text-base font-semibold text-neutral-900 pt-2"><dt>Total</dt><dd data-testid="cart-total">$0.00</dd></div>
+                    </dl>
+
+                    <button type="button" class="btn w-full bg-neutral-900 text-white hover:bg-amber-600 border-none hidden" data-testid="checkout-pay">
+                        Pagar con tarjeta
+                    </button>
+                    <a href="/login?redirect=/carrito" class="btn w-full btn-outline hidden" data-testid="checkout-login">
+                        Inicia sesión para pagar
+                    </a>
+                    <p class="text-[11px] text-neutral-400 font-inter text-center">Precios en pesos mexicanos con IVA incluido.</p>
+                </aside>
+            </div>
+        </div>
+    </main>
+</Layout>
+
+<script>
+    import { bootCartPage } from "../checkout/client/boot-cart-page";
+    void bootCartPage();
+</script>

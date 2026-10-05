@@ -25,3 +25,10 @@ pnpm-debug.log*
 .env.prod
 # llaves privadas / certificados
 *.pem
+
+# pruebas E2E (Playwright)
+e2e/.state/
+e2e/.results/
+e2e/.report/
+playwright-report/
+test-results/

@@ -139,8 +139,10 @@
                         Entrar
                     </a>
 
-                    <!-- <button
+                    <a
+                        href="/carrito"
                         class="btn btn-ghost btn-circle shrink-0 group"
+                        data-testid="header-cart"
                         aria-label="Carrito"
                     >
                         <div class="indicator">
@@ -159,11 +161,13 @@
                                 ></path>
                             </svg>
                             <span
-                                class="indicator-item badge badge-primary badge-sm h-4 w-4 sm:h-5 sm:w-5 p-0 border-2 border-white font-bold text-[9px] sm:text-[10px] rounded-full"
-                                >3</span
+                                class="indicator-item badge badge-primary badge-sm h-4 w-4 sm:h-5 sm:w-5 p-0 border-2 border-white font-bold text-[9px] sm:text-[10px] rounded-full hidden"
+                                data-cart-count
+                                data-testid="header-cart-count"
+                                >0</span
                             >
                         </div>
-                    </button> -->
+                    </a>
 
                     <div class="dropdown dropdown-end shrink-0">
                         <label
@@ -431,4 +435,16 @@
     }
 
     void syncHeaderSession();
+
+    import { cartStore, CART_CHANGED_EVENT } from "../checkout/client/cart-store";
+    function syncCartBadge() {
+        const n = cartStore.count();
+        document.querySelectorAll<HTMLElement>("[data-cart-count]").forEach((badge) => {
+            badge.textContent = n > 99 ? "99+" : String(n);
+            badge.classList.toggle("hidden", n === 0);
+        });
+    }
+    syncCartBadge();
+    window.addEventListener(CART_CHANGED_EVENT, syncCartBadge);
+    window.addEventListener("storage", syncCartBadge);
 </script>
