@@ -23,3 +23,5 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .env.prod
+# llaves privadas / certificados
+*.pem
