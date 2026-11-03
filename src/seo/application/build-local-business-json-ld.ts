@@ -4,6 +4,7 @@ import {
     SITE_EMAIL,
     SITE_GEO,
     SITE_PHONE,
+    SITE_PHONES,
     SITE_SOCIAL_PROFILES,
 } from "../domain/site-identity";
 
@@ -16,6 +17,13 @@ export function buildLocalBusinessJsonLd(siteUrl: string): Record<string, unknow
         url: origin,
         email: SITE_EMAIL,
         telephone: SITE_PHONE,
+        contactPoint: SITE_PHONES.map((phone) => ({
+            "@type": "ContactPoint",
+            telephone: phone.tel,
+            contactType: phone.whatsapp ? "customer service" : "sales",
+            areaServed: "MX",
+            availableLanguage: "es",
+        })),
         sameAs: [...SITE_SOCIAL_PROFILES],
         address: {
             "@type": "PostalAddress",

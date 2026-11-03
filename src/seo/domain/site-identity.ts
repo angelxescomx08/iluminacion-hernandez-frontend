@@ -18,6 +18,16 @@ export const SITE_GEO = {
 } as const;
 
 export const SITE_PHONE = "+525563028712";
+
+/** Todos los teléfonos públicos (mismos que en /contacto). `tel` en formato E.164. */
+export const SITE_PHONES = [
+    { label: "WhatsApp", display: "55 6302 8712", tel: "+525563028712", whatsapp: true },
+    { label: "Conmutador", display: "55 5512 4169", ext: "Ext. 121 y 122", tel: "+525555124169" },
+    { label: "Conmutador", display: "55 7245 0233", tel: "+525572450233" },
+    { label: "Conmutador", display: "55 7047 1875", tel: "+525570471875" },
+    { label: "Conmutador", display: "55 7012 9562", tel: "+525570129562" },
+    { label: "Conmutador", display: "55 6302 5712", tel: "+525563025712" },
+] as const;
 export const SITE_EMAIL = "iluminacion.hernandez.ventas@gmail.com";
 
 export const SITE_SOCIAL_PROFILES = [
